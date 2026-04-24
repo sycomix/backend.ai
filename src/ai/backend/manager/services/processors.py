@@ -44,6 +44,12 @@ if TYPE_CHECKING:
     )
     from ai.backend.manager.services.agent.processors import AgentProcessors  # pants: no-infer-dep
     from ai.backend.manager.services.agent.service import AgentService  # pants: no-infer-dep
+    from ai.backend.manager.services.app_config_policy.processors import (
+        AppConfigPolicyProcessors,  # pants: no-infer-dep
+    )
+    from ai.backend.manager.services.app_config_policy.service import (
+        AppConfigPolicyService,  # pants: no-infer-dep
+    )
     from ai.backend.manager.services.artifact.processors import (
         ArtifactProcessors,  # pants: no-infer-dep
     )
@@ -351,6 +357,7 @@ class ServiceArgs:
 @dataclass
 class Services:
     agent: AgentService
+    app_config_policy: AppConfigPolicyService
     domain: DomainService
     dotfile: DotfileService
     error_log: ErrorLogService
@@ -415,6 +422,7 @@ class ProcessorArgs:
 @dataclass
 class Processors(AbstractProcessorPackage):
     agent: AgentProcessors
+    app_config_policy: AppConfigPolicyProcessors
     domain: DomainProcessors
     dotfile: DotfileProcessors
     error_log: ErrorLogProcessors
@@ -472,6 +480,7 @@ class Processors(AbstractProcessorPackage):
     def supported_actions(self) -> list[ActionSpec]:
         return [
             *self.agent.supported_actions(),
+            *self.app_config_policy.supported_actions(),
             *self.domain.supported_actions(),
             *self.dotfile.supported_actions(),
             *self.error_log.supported_actions(),
