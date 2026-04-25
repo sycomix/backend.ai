@@ -10,7 +10,10 @@ from ai.backend.manager.data.app_config_fragment.types import (
     AppConfigFragmentKey,
     AppConfigScopeType,
 )
-from ai.backend.manager.errors.app_config import AppConfigFragmentPolicyMissing
+from ai.backend.manager.errors.app_config import (
+    AppConfigFragmentNotFound,
+    AppConfigFragmentPolicyMissing,
+)
 from ai.backend.manager.models.app_config_fragment.row import AppConfigFragmentRow
 from ai.backend.manager.models.app_config_policy.row import AppConfigPolicyRow
 from ai.backend.manager.models.utils import ExtendedAsyncSAEngine
@@ -172,11 +175,11 @@ class TestAppConfigFragmentAdminRepository:
         assert updated.extra_config is not None
         assert dict(updated.extra_config) == {"color": "red", "density": "compact"}
 
-    async def test_update_returns_none_for_missing_key(
+    async def test_update_raises_for_missing_key(
         self,
         admin_repository: AppConfigFragmentAdminRepository,
     ) -> None:
-        assert (
+        with pytest.raises(AppConfigFragmentNotFound):
             await admin_repository.update(
                 key=AppConfigFragmentKey(
                     scope_type=AppConfigScopeType.DOMAIN,
@@ -185,8 +188,6 @@ class TestAppConfigFragmentAdminRepository:
                 ),
                 extra_config={"color": "blue"},
             )
-            is None
-        )
 
     async def test_purge_existing_fragment_returns_true(
         self,
