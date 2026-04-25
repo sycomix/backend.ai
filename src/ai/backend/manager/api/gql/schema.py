@@ -20,14 +20,16 @@ from .app_config import (
     my_app_configs,
     public_app_config_fragments,
 )
-from .app_config_fragment import (
-    admin_app_config_fragments,
+from .app_config_fragment.resolver.mutation import (
     admin_bulk_create_app_config_fragments,
     admin_bulk_purge_app_config_fragments,
     admin_bulk_update_app_config_fragments,
-    app_config_fragment,
     bulk_create_my_app_config_fragments,
     bulk_update_my_app_config_fragments,
+)
+from .app_config_fragment.resolver.query import (
+    admin_app_config_fragments,
+    app_config_fragment,
 )
 from .app_config_policy import (
     admin_bulk_create_app_config_policies,

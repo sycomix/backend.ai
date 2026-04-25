@@ -1,7 +1,3 @@
-from .bulk_payloads import (
-    BulkCreateMyAppConfigFragmentsPayloadGQL,
-    BulkUpdateMyAppConfigFragmentsPayloadGQL,
-)
 from .filters import (
     AppConfigFilterGQL,
     AppConfigOrderByGQL,
@@ -14,6 +10,4 @@ __all__ = [
     "AppConfigGQL",
     "AppConfigOrderByGQL",
     "AppConfigOrderFieldGQL",
-    "BulkCreateMyAppConfigFragmentsPayloadGQL",
-    "BulkUpdateMyAppConfigFragmentsPayloadGQL",
 ]

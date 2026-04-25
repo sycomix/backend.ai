@@ -5,7 +5,7 @@ from __future__ import annotations
 from strawberry import Info
 
 from ai.backend.common.meta.meta import NEXT_RELEASE_VERSION
-from ai.backend.manager.api.gql.app_config.types import (
+from ai.backend.manager.api.gql.app_config.types.bulk_payloads import (
     BulkCreateMyAppConfigFragmentsPayloadGQL,
     BulkUpdateMyAppConfigFragmentsPayloadGQL,
 )
