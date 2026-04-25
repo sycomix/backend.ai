@@ -17,6 +17,9 @@ from ai.backend.manager.data.app_config_fragment.types import (
 from ai.backend.manager.errors.app_config import AppConfigFragmentNotFound
 from ai.backend.manager.models.app_config_fragment.row import AppConfigFragmentRow
 from ai.backend.manager.models.utils import ExtendedAsyncSAEngine
+from ai.backend.manager.repositories.app_config_fragment.cache_source import (
+    AppConfigFragmentCacheSource,
+)
 from ai.backend.manager.repositories.app_config_fragment.creators import (
     AppConfigFragmentCreatorSpec,
 )
@@ -77,9 +80,15 @@ class AppConfigFragmentAdminRepository:
     """
 
     _db_source: AppConfigFragmentDBSource
+    _cache_source: AppConfigFragmentCacheSource | None
 
-    def __init__(self, db: ExtendedAsyncSAEngine) -> None:
+    def __init__(
+        self,
+        db: ExtendedAsyncSAEngine,
+        cache_source: AppConfigFragmentCacheSource | None = None,
+    ) -> None:
         self._db_source = AppConfigFragmentDBSource(db)
+        self._cache_source = cache_source
 
     # ── Mutations ─────────────────────────────────────────────────
 
@@ -97,7 +106,9 @@ class AppConfigFragmentAdminRepository:
                 config=config,
             ),
         )
-        return await self._db_source.create(creator)
+        result = await self._db_source.create(creator)
+        await self._invalidate(key)
+        return result
 
     @app_config_fragment_admin_repository_resilience.apply()
     async def update(
@@ -105,35 +116,24 @@ class AppConfigFragmentAdminRepository:
         key: AppConfigFragmentKey,
         config: Mapping[str, Any],
     ) -> AppConfigFragmentData:
-        """Update a fragment by natural key. Resolves the natural key
-        to the row's UUID, builds an ``Updater``, and delegates to the
-        DB source. Raises :class:`AppConfigFragmentNotFound` when the
-        row is missing (or vanishes between resolve and write)."""
-        pk_value = await self._db_source.resolve_pk_by_key(key)
-        if pk_value is None:
-            raise _missing(key)
-        updater: Updater[AppConfigFragmentRow] = Updater(
-            spec=AppConfigFragmentUpdaterSpec(config=config),
-            pk_value=pk_value,
-        )
-        result = await self._db_source.update(updater)
-        if result is None:
-            raise _missing(key)
+        """Update a fragment by natural key. Raises
+        ``AppConfigFragmentNotFound`` when missing."""
+        spec = AppConfigFragmentUpdaterSpec(extra_config=extra_config)
+        result = await self._db_source.update(key, spec)
+        await self._invalidate(key)
         return result
 
     @app_config_fragment_admin_repository_resilience.apply()
     async def purge(self, key: AppConfigFragmentKey) -> bool:
-        """Delete a fragment by natural key. Resolves the natural key,
-        builds a ``Purger``, and delegates to the DB source. Returns
-        ``True`` only when a row was actually removed."""
-        pk_value = await self._db_source.resolve_pk_by_key(key)
-        if pk_value is None:
-            return False
-        purger: Purger[AppConfigFragmentRow] = Purger(
-            row_class=AppConfigFragmentRow,
-            pk_value=pk_value,
-        )
-        return await self._db_source.purge(purger)
+        result = await self._db_source.purge(key)
+        if result:
+            await self._invalidate(key)
+        return result
+
+    async def _invalidate(self, key: AppConfigFragmentKey) -> None:
+        if self._cache_source is None:
+            return
+        await self._cache_source.invalidate_for_scope(key.scope_type, key.scope_id)
 
     # ── Cross-scope reads ────────────────────────────────────────
 

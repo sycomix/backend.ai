@@ -104,6 +104,19 @@ class AppConfigFragmentDBSource:
             return row.to_data() if row is not None else None
 
     @app_config_fragment_db_source_resilience.apply()
+    async def user_domain_name(self, user_id: uuid.UUID) -> str | None:
+        """Single-column lookup of a user's `domain_name`.
+
+        Used by the cache layer to tag merged-view entries with their
+        owning domain so domain-scoped fragment writes can target a
+        bounded user set during invalidation.
+        """
+        async with self._db.begin_readonly_session() as db_sess:
+            return await db_sess.scalar(
+                sa.select(UserRow.domain_name).where(UserRow.uuid == user_id)
+            )
+
+    @app_config_fragment_db_source_resilience.apply()
     async def create(self, creator: Creator[AppConfigFragmentRow]) -> AppConfigFragmentData:
         """Insert a new fragment via the shared Creator helper.
 
