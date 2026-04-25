@@ -16,6 +16,9 @@ from .config import ClientConfig
 
 if TYPE_CHECKING:
     from .domains_v2.agent import V2AgentClient
+    from .domains_v2.app_config import V2AppConfigClient
+    from .domains_v2.app_config_fragment import V2AppConfigFragmentClient
+    from .domains_v2.app_config_policy import V2AppConfigPolicyClient
     from .domains_v2.artifact import V2ArtifactClient
     from .domains_v2.artifact_registry import V2ArtifactRegistryClient
     from .domains_v2.audit_log import V2AuditLogClient
@@ -87,6 +90,24 @@ class V2ClientRegistry:
         from .domains_v2.agent import V2AgentClient
 
         return V2AgentClient(self._client)
+
+    @cached_property
+    def app_config(self) -> V2AppConfigClient:
+        from .domains_v2.app_config import V2AppConfigClient
+
+        return V2AppConfigClient(self._client)
+
+    @cached_property
+    def app_config_fragment(self) -> V2AppConfigFragmentClient:
+        from .domains_v2.app_config_fragment import V2AppConfigFragmentClient
+
+        return V2AppConfigFragmentClient(self._client)
+
+    @cached_property
+    def app_config_policy(self) -> V2AppConfigPolicyClient:
+        from .domains_v2.app_config_policy import V2AppConfigPolicyClient
+
+        return V2AppConfigPolicyClient(self._client)
 
     @cached_property
     def artifact(self) -> V2ArtifactClient:

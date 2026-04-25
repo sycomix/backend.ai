@@ -251,6 +251,30 @@ def notification() -> None:
     """Notification commands."""
 
 
+@v2.group(cls=LazyGroup, import_name="ai.backend.client.cli.v2.app_config:app_config")
+def app_config() -> None:
+    """App config (merged-view) commands."""
+
+
+@v2.group(
+    cls=LazyGroup,
+    import_name="ai.backend.client.cli.v2.app_config_fragment:app_config_fragment",
+    name="app-config-fragment",
+)
+def app_config_fragment() -> None:
+    """App config fragment commands."""
+
+
+@v2.group(
+    cls=LazyGroup,
+    import_name="ai.backend.client.cli.v2.app_config_policy:app_config_policy",
+    name="app-config-policy",
+)
+def app_config_policy() -> None:
+    """App config policy commands."""
+
+
+
 @v2.group(
     cls=LazyGroup,
     import_name="ai.backend.client.cli.v2.prometheus_query_preset:prometheus_query_preset",

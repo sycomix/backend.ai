@@ -203,3 +203,30 @@ def scheduling_handler() -> None:
 )
 def invitation() -> None:
     """Admin role invitation commands."""
+
+
+@admin.group(
+    cls=LazyGroup,
+    import_name="ai.backend.client.cli.v2.admin.app_config:app_config",
+    name="app-config",
+)
+def app_config() -> None:
+    """Admin merged AppConfig commands (BEP-1052 §5)."""
+
+
+@admin.group(
+    cls=LazyGroup,
+    import_name="ai.backend.client.cli.v2.admin.app_config_fragment:app_config_fragment",
+    name="app-config-fragment",
+)
+def app_config_fragment() -> None:
+    """Admin AppConfigFragment commands (cross-scope search + bulk-only writes)."""
+
+
+@admin.group(
+    cls=LazyGroup,
+    import_name="ai.backend.client.cli.v2.admin.app_config_policy:app_config_policy",
+    name="app-config-policy",
+)
+def app_config_policy() -> None:
+    """Admin AppConfigPolicy commands (bulk-only writes)."""
