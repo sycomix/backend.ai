@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
+from typing import Any, cast
 
 import click
 
@@ -16,11 +17,11 @@ def app_config_policy() -> None:
     """Admin AppConfigPolicy commands (bulk-only)."""
 
 
-def _load_items(items_arg: str) -> list[dict]:
+def _load_items(items_arg: str) -> list[dict[str, Any]]:
     """Accept JSON string or `@file.json` path."""
     if items_arg.startswith("@"):
-        return json.loads(Path(items_arg[1:]).read_text())
-    return json.loads(items_arg)
+        return cast("list[dict[str, Any]]", json.loads(Path(items_arg[1:]).read_text()))
+    return cast("list[dict[str, Any]]", json.loads(items_arg))
 
 
 @app_config_policy.command(name="bulk-create")
