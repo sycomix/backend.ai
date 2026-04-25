@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from typing import Self
 
 from ai.backend.manager.repositories.agent.repositories import AgentRepositories
+from ai.backend.manager.repositories.app_config_fragment.repositories import (
+    AppConfigFragmentRepositories,
+)
 from ai.backend.manager.repositories.app_config_policy.repositories import (
     AppConfigPolicyRepositories,
 )
@@ -86,6 +89,7 @@ from ai.backend.manager.repositories.vfs_storage.repositories import VFSStorageR
 @dataclass
 class Repositories:
     agent: AgentRepositories
+    app_config_fragment: AppConfigFragmentRepositories
     app_config_policy: AppConfigPolicyRepositories
     auth: AuthRepositories
     container_registry: ContainerRegistryRepositories
@@ -136,6 +140,7 @@ class Repositories:
     @classmethod
     def create(cls, args: RepositoryArgs) -> Self:
         agent_repositories = AgentRepositories.create(args)
+        app_config_fragment_repositories = AppConfigFragmentRepositories.create(args)
         app_config_policy_repositories = AppConfigPolicyRepositories.create(args)
         auth_repositories = AuthRepositories.create(args)
         container_registry_repositories = ContainerRegistryRepositories.create(args)
@@ -187,6 +192,7 @@ class Repositories:
 
         return cls(
             agent=agent_repositories,
+            app_config_fragment=app_config_fragment_repositories,
             app_config_policy=app_config_policy_repositories,
             auth=auth_repositories,
             container_registry=container_registry_repositories,

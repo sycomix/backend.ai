@@ -457,6 +457,7 @@ class LayerType(enum.StrEnum):
     RESOURCE_SLOT_REPOSITORY = "resource_slot_repository"
 
     # DB Source layers
+    APP_CONFIG_FRAGMENT_DB_SOURCE = "app_config_fragment_db_source"
     APP_CONFIG_POLICY_DB_SOURCE = "app_config_policy_db_source"
     AUDIT_LOG_DB_SOURCE = "audit_log_db_source"
     AUTH_DB_SOURCE = "auth_db_source"
