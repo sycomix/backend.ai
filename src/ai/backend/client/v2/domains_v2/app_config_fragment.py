@@ -1,4 +1,10 @@
-"""V2 SDK client for the app-config fragment domain (BEP-1052 §2)."""
+"""V2 SDK client for the app-config fragment domain (BEP-1052 §2).
+
+Fragments are an admin-only surface — end users interact with the merged
+``AppConfig`` view (``V2AppConfigClient``) instead. Self-service
+``my_bulk_*`` writes that return the recomputed merged view also live on
+``V2AppConfigClient`` alongside the merged-view reads.
+"""
 
 from __future__ import annotations
 
@@ -7,14 +13,12 @@ from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
     AdminBulkCreateAppConfigFragmentsInput,
     AdminBulkPurgeAppConfigFragmentsInput,
     AdminBulkUpdateAppConfigFragmentsInput,
-    AppConfigFragmentKeyInput,
     SearchAppConfigFragmentsInput,
 )
 from ai.backend.common.dto.manager.v2.app_config_fragment.response import (
     AdminBulkCreateAppConfigFragmentsPayload,
     AdminBulkPurgeAppConfigFragmentsPayload,
     AdminBulkUpdateAppConfigFragmentsPayload,
-    GetAppConfigFragmentPayload,
     SearchAppConfigFragmentsPayload,
 )
 
@@ -22,35 +26,10 @@ _PATH = "/v2/app-config-fragments"
 
 
 class V2AppConfigFragmentClient(BaseDomainClient):
-    """SDK client for AppConfigFragment raw-row operations.
+    """SDK client for AppConfigFragment admin operations.
 
-    Writes are bulk-only (BEP-1052 §3). Self-service `my_bulk_*`
-    writes return the recomputed merged AppConfig — they live on
-    `V2AppConfigClient` alongside the merged-view reads.
+    Writes are bulk-only (BEP-1052 §3).
     """
-
-    async def get(self, request: AppConfigFragmentKeyInput) -> GetAppConfigFragmentPayload:
-        """Read a single fragment by natural key."""
-        return await self._client.typed_request(
-            "POST",
-            f"{_PATH}/get",
-            request=request,
-            response_model=GetAppConfigFragmentPayload,
-        )
-
-    async def scope_search(
-        self,
-        scope_type: str,
-        scope_id: str,
-        request: SearchAppConfigFragmentsInput,
-    ) -> SearchAppConfigFragmentsPayload:
-        """Scope-bound search — caller pins `(scope_type, scope_id)`."""
-        return await self._client.typed_request(
-            "POST",
-            f"{_PATH}/{scope_type}/{scope_id}/search",
-            request=request,
-            response_model=SearchAppConfigFragmentsPayload,
-        )
 
     async def admin_search(
         self, request: SearchAppConfigFragmentsInput

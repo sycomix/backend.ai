@@ -1,4 +1,9 @@
-"""V2 SDK client for the app-config policy domain (BEP-1052 §1)."""
+"""V2 SDK client for the app-config policy domain (BEP-1052 §1).
+
+Policies are an admin-only surface — end users observe their effects
+through the merged ``AppConfig`` view (``V2AppConfigClient``), not by
+reading raw policy rows.
+"""
 
 from __future__ import annotations
 
@@ -7,42 +12,22 @@ from ai.backend.common.dto.manager.v2.app_config_policy.request import (
     AdminBulkCreateAppConfigPoliciesInput,
     AdminBulkPurgeAppConfigPoliciesInput,
     AdminBulkUpdateAppConfigPoliciesInput,
-    SearchAppConfigPoliciesInput,
 )
 from ai.backend.common.dto.manager.v2.app_config_policy.response import (
     AdminBulkCreateAppConfigPoliciesPayload,
     AdminBulkPurgeAppConfigPoliciesPayload,
     AdminBulkUpdateAppConfigPoliciesPayload,
-    GetAppConfigPolicyPayload,
-    SearchAppConfigPoliciesPayload,
 )
 
 _PATH = "/v2/app-config-policies"
 
 
 class V2AppConfigPolicyClient(BaseDomainClient):
-    """SDK client for AppConfigPolicy operations.
+    """SDK client for AppConfigPolicy admin operations.
 
     Writes are bulk-only (BEP-1052 §3); single-item create / update /
     purge are intentionally absent.
     """
-
-    async def get(self, config_name: str) -> GetAppConfigPolicyPayload:
-        """Get a single policy by `config_name`."""
-        return await self._client.typed_request(
-            "GET",
-            f"{_PATH}/{config_name}",
-            response_model=GetAppConfigPolicyPayload,
-        )
-
-    async def search(self, request: SearchAppConfigPoliciesInput) -> SearchAppConfigPoliciesPayload:
-        """Paginated policy search (any authenticated user)."""
-        return await self._client.typed_request(
-            "POST",
-            f"{_PATH}/search",
-            request=request,
-            response_model=SearchAppConfigPoliciesPayload,
-        )
 
     async def admin_bulk_create(
         self, request: AdminBulkCreateAppConfigPoliciesInput
