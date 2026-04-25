@@ -15,6 +15,21 @@ from .agent import (
     agent_stats,
     agents_v2,
 )
+from .app_config import (
+    admin_app_configs,
+    my_app_configs,
+    public_app_config_fragments,
+)
+from .app_config_fragment import (
+    admin_app_config_fragments,
+    admin_bulk_create_app_config_fragments,
+    admin_bulk_purge_app_config_fragments,
+    admin_bulk_update_app_config_fragments,
+    app_config_fragment,
+    bulk_create_my_app_config_fragments,
+    bulk_update_my_app_config_fragments,
+    scoped_app_config_fragments,
+)
 from .app_config_policy import (
     admin_bulk_create_app_config_policies,
     admin_bulk_purge_app_config_policies,
@@ -515,6 +530,14 @@ class Query:
     # App Config Policy APIs (read available to any authenticated user)
     app_config_policy = app_config_policy
     app_config_policies = app_config_policies
+    # App Config Fragment APIs
+    app_config_fragment = app_config_fragment
+    scoped_app_config_fragments = scoped_app_config_fragments
+    admin_app_config_fragments = admin_app_config_fragments
+    public_app_config_fragments = public_app_config_fragments
+    # App Config merged view APIs
+    my_app_configs = my_app_configs
+    admin_app_configs = admin_app_configs
     # Prometheus Query Preset APIs (read available to any authenticated user)
     prometheus_query_preset = prometheus_query_preset
     prometheus_query_presets = prometheus_query_presets
@@ -790,10 +813,16 @@ class Mutation:
     admin_unblock_user = admin_unblock_user
     # IP allowlist self-service mutation
     update_my_allowed_client_ip = update_my_allowed_client_ip
-    # App Config Policy - Bulk admin mutations (bulk-only)
+    # App Config Policy - Bulk admin mutations
     admin_bulk_create_app_config_policies = admin_bulk_create_app_config_policies
     admin_bulk_update_app_config_policies = admin_bulk_update_app_config_policies
     admin_bulk_purge_app_config_policies = admin_bulk_purge_app_config_policies
+    # App Config Fragment - Bulk mutations
+    admin_bulk_create_app_config_fragments = admin_bulk_create_app_config_fragments
+    admin_bulk_update_app_config_fragments = admin_bulk_update_app_config_fragments
+    admin_bulk_purge_app_config_fragments = admin_bulk_purge_app_config_fragments
+    bulk_create_my_app_config_fragments = bulk_create_my_app_config_fragments
+    bulk_update_my_app_config_fragments = bulk_update_my_app_config_fragments
     # Prometheus Query Preset - Admin APIs
     admin_create_prometheus_query_preset = admin_create_prometheus_query_preset
     admin_modify_prometheus_query_preset = admin_modify_prometheus_query_preset

@@ -14,6 +14,9 @@ if TYPE_CHECKING:
     from ai.backend.common.dto.manager.v2.rbac.response import EntityNode  # pants: no-infer-dep
     from ai.backend.manager.api.adapters.registry import Adapters  # pants: no-infer-dep
     from ai.backend.manager.api.gql.agent.types import AgentV2GQL  # pants: no-infer-dep
+    from ai.backend.manager.api.gql.app_config_fragment.types import (  # pants: no-infer-dep
+        AppConfigFragmentGQL,
+    )
     from ai.backend.manager.api.gql.artifact.types import (  # pants: no-infer-dep
         ArtifactRevision,
     )
@@ -112,6 +115,22 @@ class DataLoaders:
 
     def __init__(self, adapters: Adapters) -> None:
         self._adapters = adapters
+
+    @cached_property
+    def app_config_fragment_loader(
+        self,
+    ) -> DataLoader[uuid.UUID, AppConfigFragmentGQL | None]:
+        adapter = self._adapters.app_config_fragment
+
+        async def load_fn(ids: list[uuid.UUID]) -> list[AppConfigFragmentGQL | None]:
+            from ai.backend.manager.api.gql.app_config_fragment.types import (  # pants: no-infer-dep
+                AppConfigFragmentGQL as F,
+            )
+
+            dtos = await adapter.batch_load_by_ids(ids)
+            return [F.from_pydantic(dto) if dto is not None else None for dto in dtos]
+
+        return DataLoader(load_fn=load_fn)
 
     @cached_property
     def audit_log_loader(

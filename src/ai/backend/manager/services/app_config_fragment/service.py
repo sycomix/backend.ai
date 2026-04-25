@@ -32,21 +32,33 @@ from ai.backend.manager.services.app_config_fragment.actions.admin_search import
     AdminSearchAppConfigFragmentsAction,
     AdminSearchAppConfigFragmentsActionResult,
 )
+from ai.backend.manager.services.app_config_fragment.actions.admin_search_app_configs import (
+    AdminSearchAppConfigsAction,
+    AdminSearchAppConfigsActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.bulk_create_my import (
+    BulkCreateMyAppConfigFragmentsAction,
+    BulkCreateMyAppConfigFragmentsActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.bulk_update_my import (
+    BulkUpdateMyAppConfigFragmentsAction,
+    BulkUpdateMyAppConfigFragmentsActionResult,
+)
 from ai.backend.manager.services.app_config_fragment.actions.get import (
     GetAppConfigFragmentAction,
     GetAppConfigFragmentActionResult,
 )
-from ai.backend.manager.services.app_config_fragment.actions.my_bulk_create import (
-    MyBulkCreateAppConfigFragmentsAction,
-    MyBulkCreateAppConfigFragmentsActionResult,
-)
-from ai.backend.manager.services.app_config_fragment.actions.my_bulk_update import (
-    MyBulkUpdateAppConfigFragmentsAction,
-    MyBulkUpdateAppConfigFragmentsActionResult,
+from ai.backend.manager.services.app_config_fragment.actions.get_user_app_config import (
+    GetUserAppConfigAction,
+    GetUserAppConfigActionResult,
 )
 from ai.backend.manager.services.app_config_fragment.actions.search import (
     SearchAppConfigFragmentsAction,
     SearchAppConfigFragmentsActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.search_user_app_configs import (
+    SearchUserAppConfigsAction,
+    SearchUserAppConfigsActionResult,
 )
 
 log = BraceStyleAdapter(logging.getLogger(__spec__.name))
@@ -90,7 +102,37 @@ class AppConfigFragmentService:
             has_previous_page=result.has_previous_page,
         )
 
-    # ── Bulk mutations (per-item transaction) ─────────────────────
+    # ── Merged-view reads (AppConfig, BEP-1052 §5) ────────────────
+
+    async def get_user_app_config(
+        self, action: GetUserAppConfigAction
+    ) -> GetUserAppConfigActionResult:
+        app_config = await self._repository.app_config(action.user_id, action.config_name)
+        return GetUserAppConfigActionResult(app_config=app_config)
+
+    async def search_user_app_configs(
+        self, action: SearchUserAppConfigsAction
+    ) -> SearchUserAppConfigsActionResult:
+        result = await self._repository.search_app_configs(action.scope, action.querier)
+        return SearchUserAppConfigsActionResult(
+            items=result.items,
+            total_count=result.total_count,
+            has_next_page=result.has_next_page,
+            has_previous_page=result.has_previous_page,
+        )
+
+    async def admin_search_app_configs(
+        self, action: AdminSearchAppConfigsAction
+    ) -> AdminSearchAppConfigsActionResult:
+        result = await self._admin_repository.admin_search_app_configs(action.querier)
+        return AdminSearchAppConfigsActionResult(
+            items=result.items,
+            total_count=result.total_count,
+            has_next_page=result.has_next_page,
+            has_previous_page=result.has_previous_page,
+        )
+
+    # ── Bulk mutations (BEP-1052 §3, per-item transaction) ────────
 
     async def admin_bulk_create(
         self, action: AdminBulkCreateAppConfigFragmentsAction

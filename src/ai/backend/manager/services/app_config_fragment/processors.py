@@ -21,21 +21,33 @@ from ai.backend.manager.services.app_config_fragment.actions.admin_search import
     AdminSearchAppConfigFragmentsAction,
     AdminSearchAppConfigFragmentsActionResult,
 )
+from ai.backend.manager.services.app_config_fragment.actions.admin_search_app_configs import (
+    AdminSearchAppConfigsAction,
+    AdminSearchAppConfigsActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.bulk_create_my import (
+    BulkCreateMyAppConfigFragmentsAction,
+    BulkCreateMyAppConfigFragmentsActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.bulk_update_my import (
+    BulkUpdateMyAppConfigFragmentsAction,
+    BulkUpdateMyAppConfigFragmentsActionResult,
+)
 from ai.backend.manager.services.app_config_fragment.actions.get import (
     GetAppConfigFragmentAction,
     GetAppConfigFragmentActionResult,
 )
-from ai.backend.manager.services.app_config_fragment.actions.my_bulk_create import (
-    MyBulkCreateAppConfigFragmentsAction,
-    MyBulkCreateAppConfigFragmentsActionResult,
-)
-from ai.backend.manager.services.app_config_fragment.actions.my_bulk_update import (
-    MyBulkUpdateAppConfigFragmentsAction,
-    MyBulkUpdateAppConfigFragmentsActionResult,
+from ai.backend.manager.services.app_config_fragment.actions.get_user_app_config import (
+    GetUserAppConfigAction,
+    GetUserAppConfigActionResult,
 )
 from ai.backend.manager.services.app_config_fragment.actions.search import (
     SearchAppConfigFragmentsAction,
     SearchAppConfigFragmentsActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.search_user_app_configs import (
+    SearchUserAppConfigsAction,
+    SearchUserAppConfigsActionResult,
 )
 from ai.backend.manager.services.app_config_fragment.service import AppConfigFragmentService
 
@@ -46,10 +58,18 @@ class AppConfigFragmentProcessors(AbstractProcessorPackage):
     admin_search: ActionProcessor[
         AdminSearchAppConfigFragmentsAction, AdminSearchAppConfigFragmentsActionResult
     ]
-    # Bulk mutations — wrapped by BulkActionProcessor so validators
-    # (RBAC, etc.) can filter entity_ids per-item before the service
-    # runs. No bulk validators are wired today; the processor simply
-    # forwards to the service.
+    # Merged-view (AppConfig, BEP-1052 §5)
+    get_user_app_config: ActionProcessor[GetUserAppConfigAction, GetUserAppConfigActionResult]
+    search_user_app_configs: ActionProcessor[
+        SearchUserAppConfigsAction, SearchUserAppConfigsActionResult
+    ]
+    admin_search_app_configs: ActionProcessor[
+        AdminSearchAppConfigsAction, AdminSearchAppConfigsActionResult
+    ]
+    # Bulk mutations (BEP-1052 §3) — wrapped by BulkActionProcessor so
+    # validators (RBAC, etc.) can filter entity_ids per-item before the
+    # service runs. No bulk validators are wired today; the processor
+    # simply forwards to the service.
     admin_bulk_create: BulkActionProcessor[
         AdminBulkCreateAppConfigFragmentsAction, AdminBulkCreateAppConfigFragmentsActionResult
     ]
@@ -75,6 +95,13 @@ class AppConfigFragmentProcessors(AbstractProcessorPackage):
         self.get = ActionProcessor(service.get, action_monitors)
         self.search = ActionProcessor(service.search, action_monitors)
         self.admin_search = ActionProcessor(service.admin_search, action_monitors)
+        self.get_user_app_config = ActionProcessor(service.get_user_app_config, action_monitors)
+        self.search_user_app_configs = ActionProcessor(
+            service.search_user_app_configs, action_monitors
+        )
+        self.admin_search_app_configs = ActionProcessor(
+            service.admin_search_app_configs, action_monitors
+        )
         self.admin_bulk_create = BulkActionProcessor(service.admin_bulk_create, action_monitors)
         self.admin_bulk_update = BulkActionProcessor(service.admin_bulk_update, action_monitors)
         self.admin_bulk_purge = BulkActionProcessor(service.admin_bulk_purge, action_monitors)
@@ -87,6 +114,9 @@ class AppConfigFragmentProcessors(AbstractProcessorPackage):
             GetAppConfigFragmentAction.spec(),
             SearchAppConfigFragmentsAction.spec(),
             AdminSearchAppConfigFragmentsAction.spec(),
+            GetUserAppConfigAction.spec(),
+            SearchUserAppConfigsAction.spec(),
+            AdminSearchAppConfigsAction.spec(),
             AdminBulkCreateAppConfigFragmentsAction.spec(),
             AdminBulkUpdateAppConfigFragmentsAction.spec(),
             AdminBulkPurgeAppConfigFragmentsAction.spec(),
