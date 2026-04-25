@@ -191,10 +191,19 @@ type AddRevisionPayload
   revision: ModelRevision!
 }
 
-"""
-Added in UNRELEASED. Per-item input for admin bulk create — `config_name` + initial `scope_sources`.
-"""
-input AdminAppConfigPolicyCreateItemInput
+"""Added in UNRELEASED. Per-item input for admin bulk create / update."""
+input AdminAppConfigFragmentItemInput
+  @join__type(graph: STRAWBERRY)
+{
+  """Natural-key identifier."""
+  key: AppConfigFragmentKeyInput!
+
+  """Raw configuration payload."""
+  extraConfig: JSON!
+}
+
+"""Added in UNRELEASED. Per-item input for admin bulk create / update."""
+input AdminAppConfigPolicyItemInput
   @join__type(graph: STRAWBERRY)
 {
   """Unique, immutable policy name."""
@@ -204,17 +213,23 @@ input AdminAppConfigPolicyCreateItemInput
   scopeSources: [String!]!
 }
 
-"""
-Added in UNRELEASED. Per-item input for admin bulk update — target row id + new `scope_sources`.
-"""
-input AdminAppConfigPolicyUpdateItemInput
+"""Added in UNRELEASED. Admin bulk create input — items carry any scope."""
+input AdminBulkCreateAppConfigFragmentInput
   @join__type(graph: STRAWBERRY)
 {
-  """Policy row id."""
-  id: UUID!
+  """Rows to create."""
+  items: [AdminAppConfigFragmentItemInput!]!
+}
 
-  """Ordered scope chain."""
-  scopeSources: [String!]!
+"""Added in UNRELEASED. Payload for `adminBulkCreateAppConfigFragments`."""
+type AdminBulkCreateAppConfigFragmentsPayload
+  @join__type(graph: STRAWBERRY)
+{
+  """Created fragments."""
+  created: [AppConfigFragment!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
 }
 
 """Added in UNRELEASED. Payload for `adminBulkCreateAppConfigPolicies`."""
@@ -233,28 +248,68 @@ input AdminBulkCreateAppConfigPolicyInput
   @join__type(graph: STRAWBERRY)
 {
   """Policies to create."""
-  items: [AdminAppConfigPolicyCreateItemInput!]!
+  items: [AdminAppConfigPolicyItemInput!]!
+}
+
+"""
+Added in UNRELEASED. Admin bulk purge input — keyed on `AppConfigFragmentKey`.
+"""
+input AdminBulkPurgeAppConfigFragmentInput
+  @join__type(graph: STRAWBERRY)
+{
+  """Natural keys to purge."""
+  keys: [AppConfigFragmentKeyInput!]!
+}
+
+"""Added in UNRELEASED. Payload for `adminBulkPurgeAppConfigFragments`."""
+type AdminBulkPurgeAppConfigFragmentsPayload
+  @join__type(graph: STRAWBERRY)
+{
+  """Keys of rows actually removed (absent keys are no-oped)."""
+  purged: [PurgeAppConfigFragmentKey!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
 }
 
 """Added in UNRELEASED. Payload for `adminBulkPurgeAppConfigPolicies`."""
 type AdminBulkPurgeAppConfigPoliciesPayload
   @join__type(graph: STRAWBERRY)
 {
-  """Ids of policies actually removed (absent ids no-oped)."""
-  purgedIds: [UUID!]!
+  """`config_name`s of policies actually removed (absent names no-oped)."""
+  purgedConfigNames: [String!]!
 
   """Per-item failures."""
   failed: [AppConfigPolicyBulkError!]!
 }
 
 """
-Added in UNRELEASED. Admin bulk purge input for app-config policies (keyed on row id).
+Added in UNRELEASED. Admin bulk purge input for app-config policies (keyed on `config_name`).
 """
 input AdminBulkPurgeAppConfigPolicyInput
   @join__type(graph: STRAWBERRY)
 {
-  """Policy row ids to purge."""
-  ids: [UUID!]!
+  """`config_name`s to purge."""
+  configNames: [String!]!
+}
+
+"""Added in UNRELEASED. Admin bulk update input."""
+input AdminBulkUpdateAppConfigFragmentInput
+  @join__type(graph: STRAWBERRY)
+{
+  """Rows to update."""
+  items: [AdminAppConfigFragmentItemInput!]!
+}
+
+"""Added in UNRELEASED. Payload for `adminBulkUpdateAppConfigFragments`."""
+type AdminBulkUpdateAppConfigFragmentsPayload
+  @join__type(graph: STRAWBERRY)
+{
+  """Updated fragments."""
+  updated: [AppConfigFragment!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
 }
 
 """Added in UNRELEASED. Payload for `adminBulkUpdateAppConfigPolicies`."""
@@ -273,7 +328,7 @@ input AdminBulkUpdateAppConfigPolicyInput
   @join__type(graph: STRAWBERRY)
 {
   """Policies to update."""
-  items: [AdminAppConfigPolicyUpdateItemInput!]!
+  items: [AdminAppConfigPolicyItemInput!]!
 }
 
 """Added in 26.4.2. Admin input for creating a keypair for a user."""
@@ -980,7 +1035,154 @@ type AllowedResourceGroupsPayload
   items: [String!]!
 }
 
-"""Added in UNRELEASED. Scoped app-config policy."""
+"""
+Added in UNRELEASED. Merged per-user AppConfig view. `fragments` are ordered low → high merge priority; `config` is the deep-merge result and is null when every contributing fragment is empty.
+"""
+type AppConfig
+  @join__type(graph: STRAWBERRY)
+{
+  """Target user's UUID."""
+  userId: UUID!
+
+  """Policy / config name."""
+  name: String!
+
+  """Contributing fragments in merge order (low → high)."""
+  fragments: [AppConfigFragment!]!
+
+  """Deep-merged configuration, or null when every fragment is empty."""
+  config: JSON
+}
+
+"""Added in UNRELEASED. Filter input for querying merged AppConfigs."""
+input AppConfigFilter
+  @join__type(graph: STRAWBERRY)
+{
+  """Filter by policy name."""
+  name: StringFilter = null
+
+  """Filter by target user id (admin cross-user search only)."""
+  userId: UUIDFilter = null
+}
+
+"""Added in UNRELEASED. Raw per-scope app-config fragment."""
+type AppConfigFragment
+  @join__type(graph: STRAWBERRY)
+{
+  """Row ID."""
+  id: UUID!
+
+  """Scope type."""
+  scopeType: AppConfigScopeType!
+
+  """Scope id."""
+  scopeId: String!
+
+  """Policy name (FK target)."""
+  name: String!
+
+  """Raw configuration payload, or null."""
+  extraConfig: JSON
+
+  """Creation timestamp."""
+  createdAt: DateTime!
+
+  """Last update timestamp."""
+  updatedAt: DateTime
+}
+
+"""
+Added in UNRELEASED. Per-item failure info for bulk Fragment mutations.
+"""
+type AppConfigFragmentBulkError
+  @join__type(graph: STRAWBERRY)
+{
+  """Original position in the input list."""
+  index: Int!
+
+  """Scope type of the failed row."""
+  scopeType: AppConfigScopeType!
+
+  """Scope id of the failed row."""
+  scopeId: String!
+
+  """Policy name of the failed row."""
+  name: String!
+
+  """Reason for the failure."""
+  message: String!
+}
+
+"""Added in UNRELEASED. Filter input for querying app-config fragments."""
+input AppConfigFragmentFilter
+  @join__type(graph: STRAWBERRY)
+{
+  """Filter by policy name."""
+  name: StringFilter = null
+
+  """Filter by scope_id."""
+  scopeId: StringFilter = null
+}
+
+"""Added in UNRELEASED. Natural key for an app-config fragment row."""
+input AppConfigFragmentKeyInput
+  @join__type(graph: STRAWBERRY)
+{
+  """Scope type."""
+  scopeType: AppConfigScopeType!
+
+  """Scope id."""
+  scopeId: String!
+
+  """Policy name."""
+  name: String!
+}
+
+"""
+Added in UNRELEASED. Specifies ordering for app-config fragment results.
+"""
+input AppConfigFragmentOrderBy
+  @join__type(graph: STRAWBERRY)
+{
+  """The field to order by."""
+  field: AppConfigFragmentOrderField!
+
+  """Sort direction."""
+  direction: OrderDirection! = DESC
+}
+
+"""
+Added in UNRELEASED. Fields available for ordering app-config fragments.
+"""
+enum AppConfigFragmentOrderField
+  @join__type(graph: STRAWBERRY)
+{
+  SCOPE_TYPE @join__enumValue(graph: STRAWBERRY)
+  SCOPE_ID @join__enumValue(graph: STRAWBERRY)
+  NAME @join__enumValue(graph: STRAWBERRY)
+  CREATED_AT @join__enumValue(graph: STRAWBERRY)
+}
+
+"""Added in UNRELEASED. Specifies ordering for merged AppConfig results."""
+input AppConfigOrderBy
+  @join__type(graph: STRAWBERRY)
+{
+  """The field to order by."""
+  field: AppConfigOrderField!
+
+  """Sort direction."""
+  direction: OrderDirection! = ASC
+}
+
+"""Added in UNRELEASED. Fields available for ordering merged AppConfigs."""
+enum AppConfigOrderField
+  @join__type(graph: STRAWBERRY)
+{
+  USER_ID @join__enumValue(graph: STRAWBERRY)
+  NAME @join__enumValue(graph: STRAWBERRY)
+}
+
+"""Added in UNRELEASED. Scoped app-config policy (BEP-1052 §1)."""
 type AppConfigPolicy implements Node
   @join__implements(graph: STRAWBERRY, interface: "Node")
   @join__type(graph: STRAWBERRY)
@@ -1007,6 +1209,9 @@ type AppConfigPolicyBulkError
 {
   """Original position in the input list."""
   index: Int!
+
+  """`config_name` of the failed row."""
+  configName: String!
 
   """Reason for the failure."""
   message: String!
@@ -1067,6 +1272,15 @@ enum AppConfigPolicyOrderField
   CONFIG_NAME @join__enumValue(graph: STRAWBERRY)
   CREATED_AT @join__enumValue(graph: STRAWBERRY)
   UPDATED_AT @join__enumValue(graph: STRAWBERRY)
+}
+
+enum AppConfigScopeType
+  @join__type(graph: STRAWBERRY)
+{
+  PUBLIC @join__enumValue(graph: STRAWBERRY)
+  DOMAIN @join__enumValue(graph: STRAWBERRY)
+  DOMAIN_USER_DEFAULTS @join__enumValue(graph: STRAWBERRY)
+  USER @join__enumValue(graph: STRAWBERRY)
 }
 
 """
@@ -2050,6 +2264,29 @@ type BulkAssignRolePayload
   failed: [BulkAssignRoleError!]!
 }
 
+"""
+Added in UNRELEASED. Self-service bulk create — scope is `USER` / `current_user`.
+"""
+input BulkCreateMyAppConfigFragmentInput
+  @join__type(graph: STRAWBERRY)
+{
+  """USER-scope rows to create."""
+  items: [MyAppConfigFragmentItemInput!]!
+}
+
+"""
+Added in UNRELEASED. Payload for `bulkCreateMyAppConfigFragments` (recomputed views).
+"""
+type BulkCreateMyAppConfigFragmentsPayload
+  @join__type(graph: STRAWBERRY)
+{
+  """Recomputed merged AppConfig views for each created USER fragment."""
+  created: [AppConfig!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
+}
+
 """Added in 26.2.0. Payload for bulk user creation mutation."""
 type BulkCreateUsersV2Payload
   @join__type(graph: STRAWBERRY)
@@ -2200,6 +2437,29 @@ type BulkRevokeRolePayload
 
   """Users that failed to be revoked"""
   failed: [BulkRevokeRoleError!]!
+}
+
+"""
+Added in UNRELEASED. Self-service bulk update — scope is `USER` / `current_user`.
+"""
+input BulkUpdateMyAppConfigFragmentInput
+  @join__type(graph: STRAWBERRY)
+{
+  """USER-scope rows to update."""
+  items: [MyAppConfigFragmentItemInput!]!
+}
+
+"""
+Added in UNRELEASED. Payload for `bulkUpdateMyAppConfigFragments` (recomputed views).
+"""
+type BulkUpdateMyAppConfigFragmentsPayload
+  @join__type(graph: STRAWBERRY)
+{
+  """Recomputed merged AppConfig views for each updated USER fragment."""
+  updated: [AppConfig!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
 }
 
 """Added in 26.3.0. Payload for bulk user update mutation."""
@@ -11052,9 +11312,34 @@ type Mutation
   adminBulkUpdateAppConfigPolicies(input: AdminBulkUpdateAppConfigPolicyInput!): AdminBulkUpdateAppConfigPoliciesPayload! @join__field(graph: STRAWBERRY)
 
   """
-  Added in UNRELEASED. Hard-delete policies by row id; rows still referenced by fragments surface in `failed`. Admin only.
+  Added in UNRELEASED. Rejects items whose `config_name` still has referencing fragment rows. Admin only.
   """
   adminBulkPurgeAppConfigPolicies(input: AdminBulkPurgeAppConfigPolicyInput!): AdminBulkPurgeAppConfigPoliciesPayload! @join__field(graph: STRAWBERRY)
+
+  """
+  Added in UNRELEASED. Strict insert across any scope; each item runs in its own transaction and failures are collected per-item (admin only).
+  """
+  adminBulkCreateAppConfigFragments(input: AdminBulkCreateAppConfigFragmentInput!): AdminBulkCreateAppConfigFragmentsPayload! @join__field(graph: STRAWBERRY)
+
+  """
+  Added in UNRELEASED. Wholesale JSON replacement; items with no existing row are returned as failures (admin only).
+  """
+  adminBulkUpdateAppConfigFragments(input: AdminBulkUpdateAppConfigFragmentInput!): AdminBulkUpdateAppConfigFragmentsPayload! @join__field(graph: STRAWBERRY)
+
+  """
+  Added in UNRELEASED. Cleanup-only deletion; absent keys are no-oped (admin only).
+  """
+  adminBulkPurgeAppConfigFragments(input: AdminBulkPurgeAppConfigFragmentInput!): AdminBulkPurgeAppConfigFragmentsPayload! @join__field(graph: STRAWBERRY)
+
+  """
+  Added in UNRELEASED. Strict insert on the caller's USER row; duplicates fail per-item. Returns recomputed merged `AppConfig` views.
+  """
+  bulkCreateMyAppConfigFragments(input: BulkCreateMyAppConfigFragmentInput!): BulkCreateMyAppConfigFragmentsPayload! @join__field(graph: STRAWBERRY)
+
+  """
+  Added in UNRELEASED. Wholesale replacement on the caller's USER row; missing rows are returned as failures. Returns recomputed merged `AppConfig` views.
+  """
+  bulkUpdateMyAppConfigFragments(input: BulkUpdateMyAppConfigFragmentInput!): BulkUpdateMyAppConfigFragmentsPayload! @join__field(graph: STRAWBERRY)
 
   """Added in 26.3.0. Create a new query definition (admin only)"""
   adminCreatePrometheusQueryPreset(input: CreateQueryDefinitionInput!): CreateQueryDefinitionPayload! @join__field(graph: STRAWBERRY)
@@ -11273,6 +11558,17 @@ type Mutation
 
   """Added in 26.4.2. Terminate sessions within a project scope."""
   terminateProjectSessionsV2(scope: ProjectSessionV2Scope!, sessionIds: [ID!]!, forced: Boolean! = false): TerminateSessionsPayload! @join__field(graph: STRAWBERRY)
+}
+
+"""Added in UNRELEASED. Per-item input for self-service (`my`) bulk."""
+input MyAppConfigFragmentItemInput
+  @join__type(graph: STRAWBERRY)
+{
+  """Policy name."""
+  name: String!
+
+  """Raw configuration payload."""
+  extraConfig: JSON!
 }
 
 """
@@ -12779,6 +13075,20 @@ input ProjectWeightInputItem
   weight: Decimal = null
 }
 
+"""Added in UNRELEASED. Natural key of a purged fragment row."""
+type PurgeAppConfigFragmentKey
+  @join__type(graph: STRAWBERRY)
+{
+  """Scope type."""
+  scopeType: AppConfigScopeType!
+
+  """Scope id."""
+  scopeId: String!
+
+  """Policy name."""
+  name: String!
+}
+
 """
 Completely delete domain from DB.
 
@@ -13574,14 +13884,39 @@ type Query
   adminImageAliases(filter: ImageV2AliasFilter = null, orderBy: [ImageV2AliasOrderByGQL!] = null, before: String = null, after: String = null, first: Int = null, last: Int = null, limit: Int = null, offset: Int = null): ImageV2AliasConnection @join__field(graph: STRAWBERRY)
 
   """
-  Added in UNRELEASED. Get a single app-config policy by row id. Available to any authenticated user.
+  Added in UNRELEASED. Get a single app-config policy by `config_name`. Available to any authenticated user.
   """
-  appConfigPolicy(id: UUID!): AppConfigPolicy @join__field(graph: STRAWBERRY)
+  appConfigPolicy(configName: String!): AppConfigPolicy @join__field(graph: STRAWBERRY)
 
   """
   Added in UNRELEASED. List app-config policies with filtering and pagination. Available to any authenticated user.
   """
   appConfigPolicies(filter: AppConfigPolicyFilter = null, orderBy: [AppConfigPolicyOrderBy!] = null, first: Int = null, after: String = null, last: Int = null, before: String = null, limit: Int = null, offset: Int = null): AppConfigPolicyConnection! @join__field(graph: STRAWBERRY)
+
+  """
+  Added in UNRELEASED. Get a single app-config fragment by natural key `(scope_type, scope_id, name)`. Available to any authenticated user — service-layer authorization gates cross-scope reads.
+  """
+  appConfigFragment(scopeType: AppConfigScopeType!, scopeId: String!, name: String!): AppConfigFragment @join__field(graph: STRAWBERRY)
+
+  """
+  Added in UNRELEASED. Cross-scope admin search across all app-config fragments (admin only).
+  """
+  adminAppConfigFragments(filter: AppConfigFragmentFilter = null, orderBy: [AppConfigFragmentOrderBy!] = null, first: Int = null, after: String = null, last: Int = null, before: String = null, limit: Int = null, offset: Int = null): [AppConfigFragment!]! @join__field(graph: STRAWBERRY)
+
+  """
+  Added in UNRELEASED. Public (no-auth) `PUBLIC`-scope app-config fragments — the subset of raw fragments that carry no personally-scoped data.
+  """
+  publicAppConfigFragments(filter: AppConfigFragmentFilter = null, orderBy: [AppConfigFragmentOrderBy!] = null, first: Int = null, after: String = null, last: Int = null, before: String = null, limit: Int = null, offset: Int = null): [AppConfigFragment!]! @join__field(graph: STRAWBERRY)
+
+  """
+  Added in UNRELEASED. Caller's own merged AppConfig list (auth required). Chain per policy ; the adapter pins `(USER, current_user)` internally.
+  """
+  myAppConfigs(filter: AppConfigFilter = null, orderBy: [AppConfigOrderBy!] = null, first: Int = null, after: String = null, last: Int = null, before: String = null, limit: Int = null, offset: Int = null): [AppConfig!]! @join__field(graph: STRAWBERRY)
+
+  """
+  Added in UNRELEASED. Cross-user merged-view search (admin only). Resolves any user's AppConfig for audit / support. Pin to a single user with `filter.userId`; otherwise paginates across all users.
+  """
+  adminAppConfigs(filter: AppConfigFilter = null, orderBy: [AppConfigOrderBy!] = null, first: Int = null, after: String = null, last: Int = null, before: String = null, limit: Int = null, offset: Int = null): [AppConfig!]! @join__field(graph: STRAWBERRY)
 
   """
   Added in 26.4.2. Get a single prometheus query preset by ID. Available to any authenticated user since presets are a shared catalog of metric query templates.
