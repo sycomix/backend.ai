@@ -123,12 +123,24 @@ class DataLoaders:
         adapter = self._adapters.app_config_fragment
 
         async def load_fn(ids: list[uuid.UUID]) -> list[AppConfigFragmentGQL | None]:
+            from ai.backend.common.dto.manager.v2.app_config_fragment.request import (  # pants: no-infer-dep
+                AppConfigFragmentFilter,
+                SearchAppConfigFragmentsInput,
+            )
             from ai.backend.manager.api.gql.app_config_fragment.types import (  # pants: no-infer-dep
                 AppConfigFragmentGQL as F,
             )
 
-            dtos = await adapter.batch_load_by_ids(ids)
-            return [F.from_pydantic(dto) if dto is not None else None for dto in dtos]
+            if not ids:
+                return []
+            payload = await adapter.admin_search(
+                SearchAppConfigFragmentsInput(
+                    filter=AppConfigFragmentFilter(id_in=list(ids)),
+                    limit=len(ids),
+                ),
+            )
+            by_id = {dto.id: F.from_pydantic(dto) for dto in payload.items}
+            return [by_id.get(fragment_id) for fragment_id in ids]
 
         return DataLoader(load_fn=load_fn)
 
