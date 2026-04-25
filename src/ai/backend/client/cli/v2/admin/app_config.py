@@ -71,9 +71,7 @@ def search(
         )
 
     orders = (
-        parse_order_options(order_by, AppConfigOrderField, AppConfigOrder)
-        if order_by
-        else None
+        parse_order_options(order_by, AppConfigOrderField, AppConfigOrder) if order_by else None
     )
 
     async def _run() -> None:

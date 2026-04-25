@@ -35,9 +35,7 @@ class V2AppConfigPolicyClient(BaseDomainClient):
             response_model=GetAppConfigPolicyPayload,
         )
 
-    async def search(
-        self, request: SearchAppConfigPoliciesInput
-    ) -> SearchAppConfigPoliciesPayload:
+    async def search(self, request: SearchAppConfigPoliciesInput) -> SearchAppConfigPoliciesPayload:
         """Paginated policy search (any authenticated user)."""
         return await self._client.typed_request(
             "POST",

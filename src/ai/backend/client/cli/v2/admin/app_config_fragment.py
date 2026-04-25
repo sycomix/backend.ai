@@ -65,9 +65,7 @@ def search(
             name=StringFilter(contains=name_contains) if name_contains is not None else None,
             scope_type=AppConfigScopeType(scope_type) if scope_type is not None else None,
             scope_id=(
-                StringFilter(contains=scope_id_contains)
-                if scope_id_contains is not None
-                else None
+                StringFilter(contains=scope_id_contains) if scope_id_contains is not None else None
             ),
         )
 
