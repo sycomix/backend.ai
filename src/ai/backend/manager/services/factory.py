@@ -6,6 +6,8 @@ from ai.backend.manager.repositories.resource_allocation.repository import (
 )
 from ai.backend.manager.services.agent.processors import AgentProcessors
 from ai.backend.manager.services.agent.service import AgentService
+from ai.backend.manager.services.app_config_fragment.processors import AppConfigFragmentProcessors
+from ai.backend.manager.services.app_config_fragment.service import AppConfigFragmentService
 from ai.backend.manager.services.app_config_policy.processors import AppConfigPolicyProcessors
 from ai.backend.manager.services.app_config_policy.service import AppConfigPolicyService
 from ai.backend.manager.services.artifact.processors import ArtifactProcessors
@@ -161,6 +163,10 @@ def create_services(args: ServiceArgs) -> Services:
             args.hook_plugin_ctx,
             args.event_producer,
             args.agent_cache,
+        ),
+        app_config_fragment=AppConfigFragmentService(
+            repository=repositories.app_config_fragment.repository,
+            admin_repository=repositories.app_config_fragment.admin_repository,
         ),
         app_config_policy=AppConfigPolicyService(
             repository=repositories.app_config_policy.repository,
@@ -420,6 +426,9 @@ def create_processors(
     services = create_services(args.service_args)
     return Processors(
         agent=AgentProcessors(services.agent, action_monitors, validators),
+        app_config_fragment=AppConfigFragmentProcessors(
+            services.app_config_fragment, action_monitors, validators
+        ),
         app_config_policy=AppConfigPolicyProcessors(
             services.app_config_policy, action_monitors, validators
         ),
