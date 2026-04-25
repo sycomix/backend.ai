@@ -8,7 +8,6 @@ from .resolver import (
     app_config_fragment,
     bulk_create_my_app_config_fragments,
     bulk_update_my_app_config_fragments,
-    scoped_app_config_fragments,
 )
 from .types import (
     AppConfigFragmentFilterGQL,
@@ -20,9 +19,8 @@ from .types import (
 )
 
 __all__ = [
-    # Queries
+    # Queries — scope-bound list belongs on DomainV2 / UserV2 child fields per BEP-1052
     "app_config_fragment",
-    "scoped_app_config_fragments",
     "admin_app_config_fragments",
     # Bulk mutations (BEP-1052 §3 — bulk-only)
     "admin_bulk_create_app_config_fragments",

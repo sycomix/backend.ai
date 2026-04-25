@@ -28,7 +28,6 @@ from .app_config_fragment import (
     app_config_fragment,
     bulk_create_my_app_config_fragments,
     bulk_update_my_app_config_fragments,
-    scoped_app_config_fragments,
 )
 from .app_config_policy import (
     admin_bulk_create_app_config_policies,
@@ -532,7 +531,6 @@ class Query:
     app_config_policies = app_config_policies
     # App Config Fragment APIs
     app_config_fragment = app_config_fragment
-    scoped_app_config_fragments = scoped_app_config_fragments
     admin_app_config_fragments = admin_app_config_fragments
     public_app_config_fragments = public_app_config_fragments
     # App Config merged view APIs

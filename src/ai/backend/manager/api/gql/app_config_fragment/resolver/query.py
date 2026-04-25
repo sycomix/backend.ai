@@ -1,4 +1,12 @@
-"""AppConfigFragment GQL query resolvers."""
+"""AppConfigFragment GQL query resolvers.
+
+Per BEP-1052 §2 the scope-bound list is exposed via child fields on
+`DomainV2.appConfigFragments` / `UserV2.appConfigFragments`, not as a
+root resolver. Only the single-row read and the cross-scope admin
+search live here. The scope-bound REST endpoint
+`POST /v2/app-config-fragments/{scope_type}/{scope_id}/search`
+continues to use the adapter's `search()` method directly.
+"""
 
 from __future__ import annotations
 
@@ -21,9 +29,6 @@ from ai.backend.manager.api.gql.decorators import (
 )
 from ai.backend.manager.api.gql.types import StrawberryGQLContext
 from ai.backend.manager.api.gql.utils import check_admin_only
-from ai.backend.manager.data.app_config_fragment.types import (
-    AppConfigScopeType as DataAppConfigScopeType,
-)
 
 
 @gql_root_field(
@@ -48,47 +53,6 @@ async def app_config_fragment(
     if payload.item is None:
         return None
     return AppConfigFragmentGQL.from_pydantic(payload.item)
-
-
-@gql_root_field(
-    BackendAIGQLMeta(
-        added_version=NEXT_RELEASE_VERSION,
-        description=(
-            "Scope-bound app-config fragment list. Caller pins "
-            "`(scope_type, scope_id)` so non-admin users only see fragments within "
-            "their own scope (BEP-1052 §2)."
-        ),
-    )
-)  # type: ignore[misc]
-async def scoped_app_config_fragments(
-    info: Info[StrawberryGQLContext],
-    scope_type: AppConfigScopeType,
-    scope_id: str,
-    filter: AppConfigFragmentFilterGQL | None = None,
-    order_by: list[AppConfigFragmentOrderByGQL] | None = None,
-    first: int | None = None,
-    after: str | None = None,
-    last: int | None = None,
-    before: str | None = None,
-    limit: int | None = None,
-    offset: int | None = None,
-) -> list[AppConfigFragmentGQL]:
-    search_input = SearchAppConfigFragmentsInput(
-        filter=filter.to_pydantic() if filter else None,
-        order=[o.to_pydantic() for o in order_by] if order_by else None,
-        first=first,
-        after=after,
-        last=last,
-        before=before,
-        limit=limit,
-        offset=offset,
-    )
-    payload = await info.context.adapters.app_config_fragment.search(
-        scope_type=DataAppConfigScopeType(scope_type.value),
-        scope_id=scope_id,
-        input=search_input,
-    )
-    return [AppConfigFragmentGQL.from_pydantic(node) for node in payload.items]
 
 
 @gql_root_field(

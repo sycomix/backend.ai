@@ -51,7 +51,7 @@ async def my_app_configs(
     limit: int | None = None,
     offset: int | None = None,
 ) -> list[AppConfigGQL]:
-    payload = await info.context.adapters.app_config_fragment.my_search_app_configs(
+    payload = await info.context.adapters.app_config.my_search_app_configs(
         SearchMyAppConfigsInput(
             filter=filter.to_pydantic() if filter else None,
             order=[o.to_pydantic() for o in order_by] if order_by else None,
@@ -88,7 +88,7 @@ async def admin_app_configs(
     offset: int | None = None,
 ) -> list[AppConfigGQL]:
     check_admin_only()
-    payload = await info.context.adapters.app_config_fragment.admin_search_app_configs(
+    payload = await info.context.adapters.app_config.admin_search_app_configs(
         SearchAppConfigsInput(
             filter=filter.to_pydantic() if filter else None,
             order=[o.to_pydantic() for o in order_by] if order_by else None,

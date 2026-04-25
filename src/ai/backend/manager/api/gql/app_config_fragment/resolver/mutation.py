@@ -89,7 +89,7 @@ async def bulk_create_my_app_config_fragments(
     info: Info[StrawberryGQLContext],
     input: BulkCreateMyAppConfigFragmentInputGQL,
 ) -> BulkCreateMyAppConfigFragmentsPayloadGQL:
-    result = await info.context.adapters.app_config_fragment.my_bulk_create(input.to_pydantic())
+    result = await info.context.adapters.app_config.my_bulk_create(input.to_pydantic())
     return BulkCreateMyAppConfigFragmentsPayloadGQL.from_pydantic(result)
 
 
@@ -106,5 +106,5 @@ async def bulk_update_my_app_config_fragments(
     info: Info[StrawberryGQLContext],
     input: BulkUpdateMyAppConfigFragmentInputGQL,
 ) -> BulkUpdateMyAppConfigFragmentsPayloadGQL:
-    result = await info.context.adapters.app_config_fragment.my_bulk_update(input.to_pydantic())
+    result = await info.context.adapters.app_config.my_bulk_update(input.to_pydantic())
     return BulkUpdateMyAppConfigFragmentsPayloadGQL.from_pydantic(result)

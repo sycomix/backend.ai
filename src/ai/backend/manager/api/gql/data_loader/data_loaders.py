@@ -123,6 +123,7 @@ class DataLoaders:
         adapter = self._adapters.app_config_fragment
 
         async def load_fn(ids: list[uuid.UUID]) -> list[AppConfigFragmentGQL | None]:
+            from ai.backend.common.dto.manager.query import UUIDFilter  # pants: no-infer-dep
             from ai.backend.common.dto.manager.v2.app_config_fragment.request import (  # pants: no-infer-dep
                 AppConfigFragmentFilter,
                 SearchAppConfigFragmentsInput,
@@ -135,7 +136,7 @@ class DataLoaders:
                 return []
             payload = await adapter.admin_search(
                 SearchAppConfigFragmentsInput(
-                    filter=AppConfigFragmentFilter(id_in=list(ids)),
+                    filter=AppConfigFragmentFilter(id=UUIDFilter.model_validate({"in": list(ids)})),
                     limit=len(ids),
                 ),
             )
