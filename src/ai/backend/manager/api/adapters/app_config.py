@@ -1,4 +1,4 @@
-"""AppConfig (merged view) domain adapter — BEP-1052 §5.
+"""AppConfig (merged view) domain adapter
 
 Reads the per-user merged AppConfig view and writes the underlying USER
 fragments via the same `app_config_fragment` service processors. The
@@ -69,7 +69,7 @@ from .base import BaseAdapter
 
 
 class AppConfigAdapter(BaseAdapter):
-    """Adapter for the merged AppConfig view (BEP-1052 §5).
+    """Adapter for the merged AppConfig view.
 
     Backed by the `app_config_fragment` service processors — the merged
     view is computed from raw fragments — but exposed as a separate
@@ -146,7 +146,7 @@ class AppConfigAdapter(BaseAdapter):
             has_previous_page=result.has_previous_page,
         )
 
-    # ── Self-service bulk writes (BEP-1052 §3) ───────────────────────
+    # ── Self-service bulk writes ───────────────────────
     #
     # Each bulk processor returns a `BulkProcessResult[T]` whose
     # `.result` field is the underlying `*ActionResult` produced by the
@@ -156,19 +156,12 @@ class AppConfigAdapter(BaseAdapter):
     async def my_bulk_create(
         self, input: BulkCreateMyAppConfigFragmentsInput
     ) -> BulkCreateMyAppConfigFragmentsPayload:
-        me = current_user()
-        if me is None:
-            raise UnreachableError("User context is not available")
         items = [
             MyAppConfigFragmentBulkItem(name=item.name, extra_config=dict(item.extra_config))
             for item in input.items
         ]
         wrapper = await self._processors.app_config_fragment.bulk_create_my.wait_for_complete(
-            BulkCreateMyAppConfigFragmentsAction(
-                entity_ids=[],
-                user_id=me.user_id,
-                items=items,
-            )
+            BulkCreateMyAppConfigFragmentsAction(entity_ids=[], items=items)
         )
         result = wrapper.result
         return BulkCreateMyAppConfigFragmentsPayload(
@@ -179,19 +172,12 @@ class AppConfigAdapter(BaseAdapter):
     async def my_bulk_update(
         self, input: BulkUpdateMyAppConfigFragmentsInput
     ) -> BulkUpdateMyAppConfigFragmentsPayload:
-        me = current_user()
-        if me is None:
-            raise UnreachableError("User context is not available")
         items = [
             MyAppConfigFragmentBulkItem(name=item.name, extra_config=dict(item.extra_config))
             for item in input.items
         ]
         wrapper = await self._processors.app_config_fragment.bulk_update_my.wait_for_complete(
-            BulkUpdateMyAppConfigFragmentsAction(
-                entity_ids=[],
-                user_id=me.user_id,
-                items=items,
-            )
+            BulkUpdateMyAppConfigFragmentsAction(entity_ids=[], items=items)
         )
         result = wrapper.result
         return BulkUpdateMyAppConfigFragmentsPayload(

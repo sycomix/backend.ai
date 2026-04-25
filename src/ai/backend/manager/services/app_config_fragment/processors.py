@@ -58,7 +58,7 @@ class AppConfigFragmentProcessors(AbstractProcessorPackage):
     admin_search: ActionProcessor[
         AdminSearchAppConfigFragmentsAction, AdminSearchAppConfigFragmentsActionResult
     ]
-    # Merged-view (AppConfig, BEP-1052 §5)
+    # Merged-view (AppConfig)
     get_user_app_config: ActionProcessor[GetUserAppConfigAction, GetUserAppConfigActionResult]
     search_user_app_configs: ActionProcessor[
         SearchUserAppConfigsAction, SearchUserAppConfigsActionResult
@@ -66,7 +66,7 @@ class AppConfigFragmentProcessors(AbstractProcessorPackage):
     admin_search_app_configs: ActionProcessor[
         AdminSearchAppConfigsAction, AdminSearchAppConfigsActionResult
     ]
-    # Bulk mutations (BEP-1052 §3) — wrapped by BulkActionProcessor so
+    # Bulk mutations — wrapped by BulkActionProcessor so
     # validators (RBAC, etc.) can filter entity_ids per-item before the
     # service runs. No bulk validators are wired today; the processor
     # simply forwards to the service.

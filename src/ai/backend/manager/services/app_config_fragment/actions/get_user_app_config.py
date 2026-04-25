@@ -10,7 +10,7 @@ from ai.backend.manager.services.app_config_fragment.actions.base import AppConf
 
 @dataclass
 class GetUserAppConfigAction(AppConfigFragmentAction):
-    """Resolve a single per-user merged AppConfig (BEP-1052 §5)."""
+    """Resolve a single per-user merged AppConfig."""
 
     user_id: uuid.UUID
     config_name: str

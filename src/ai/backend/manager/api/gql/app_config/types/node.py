@@ -1,4 +1,4 @@
-"""AppConfig (merged view) GQL output types (BEP-1052 §5)."""
+"""AppConfig (merged view) GQL output types."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from ai.backend.manager.api.gql.pydantic_compat import PydanticOutputMixin
     BackendAIGQLMeta(
         added_version=NEXT_RELEASE_VERSION,
         description=(
-            "Merged per-user AppConfig view (BEP-1052 §5). `fragments` are ordered "
+            "Merged per-user AppConfig view. `fragments` are ordered "
             "low → high merge priority; `config` is the deep-merge result and is "
             "null when every contributing fragment is empty."
         ),

@@ -1,6 +1,6 @@
 """AppConfigFragment GQL query resolvers.
 
-Per BEP-1052 §2 the scope-bound list is exposed via child fields on
+Per the scope-bound list is exposed via child fields on
 `DomainV2.appConfigFragments` / `UserV2.appConfigFragments`, not as a
 root resolver. Only the single-row read and the cross-scope admin
 search live here. The scope-bound REST endpoint

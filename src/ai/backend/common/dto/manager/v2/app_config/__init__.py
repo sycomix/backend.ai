@@ -1,5 +1,5 @@
 """
-AppConfig (merged view) DTOs v2 for Manager API (BEP-1052 §5).
+AppConfig (merged view) DTOs v2 for Manager API.
 """
 
 from .request import (

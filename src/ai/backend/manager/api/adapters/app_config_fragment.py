@@ -69,9 +69,9 @@ from .base import BaseAdapter
 
 
 class AppConfigFragmentAdapter(BaseAdapter):
-    """Adapter for AppConfigFragment raw-row operations (BEP-1052 §2).
+    """Adapter for AppConfigFragment raw-row operations.
 
-    Writes are bulk-only (BEP-1052 §3); single-item create / update /
+    Writes are bulk-only; single-item create / update /
     purge entry points are intentionally absent. Self-service my_bulk
     writes (which return the recomputed merged view) live on
     `AppConfigAdapter` alongside the merged-view reads.
@@ -226,7 +226,7 @@ class AppConfigFragmentAdapter(BaseAdapter):
             updated_at=data.updated_at,
         )
 
-    # ── Bulk mutations (BEP-1052 §3) ───────────────────────────────
+    # ── Bulk mutations ───────────────────────────────
     #
     # Each bulk processor returns a `BulkProcessResult[T]` whose
     # `.result` field is the underlying `*ActionResult` produced by the

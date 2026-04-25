@@ -1,5 +1,5 @@
 """
-Common types for AppConfig (merged view) DTO v2 (BEP-1052 §5).
+Common types for AppConfig (merged view) DTO v2.
 """
 
 from __future__ import annotations

@@ -13,7 +13,7 @@ from ai.backend.manager.services.app_config_fragment.actions.base import AppConf
 
 @dataclass
 class SearchUserAppConfigsAction(AppConfigFragmentAction):
-    """Scope-bound merged-view search (per-user, BEP-1052 §5)."""
+    """Scope-bound merged-view search(per-user)."""
 
     scope: UserAppConfigSearchScope
     querier: BatchQuerier

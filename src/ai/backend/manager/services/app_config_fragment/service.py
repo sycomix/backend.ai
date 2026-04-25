@@ -102,7 +102,7 @@ class AppConfigFragmentService:
             has_previous_page=result.has_previous_page,
         )
 
-    # ── Merged-view reads (AppConfig, BEP-1052 §5) ────────────────
+    # ── Merged-view reads (AppConfig) ────────────────
 
     async def get_user_app_config(
         self, action: GetUserAppConfigAction
@@ -132,7 +132,7 @@ class AppConfigFragmentService:
             has_previous_page=result.has_previous_page,
         )
 
-    # ── Bulk mutations (BEP-1052 §3, per-item transaction) ────────
+    # ── Bulk mutations ────────
 
     async def admin_bulk_create(
         self, action: AdminBulkCreateAppConfigFragmentsAction

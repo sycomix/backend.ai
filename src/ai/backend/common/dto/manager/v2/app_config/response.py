@@ -1,5 +1,5 @@
 """
-Response DTOs for AppConfig (merged view) DTO v2 (BEP-1052 §5).
+Response DTOs for AppConfig (merged view) DTO v2.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ __all__ = (
 
 
 class AppConfigNode(BaseResponseModel):
-    """Merged per-user AppConfig view (BEP-1052 §5).
+    """Merged per-user AppConfig view.
 
     `fragments` are ordered low → high merge priority (matching the
     policy's `scope_sources`). `config` is the deep-merged result,
@@ -66,7 +66,7 @@ class BulkCreateMyAppConfigFragmentsPayload(BaseResponseModel):
     """Payload for `bulkCreateMyAppConfigFragments`.
 
     Each successfully created row produces a recomputed merged
-    `AppConfigNode`; failures are collected per-item (BEP-1052 §3).
+    `AppConfigNode`; failures are collected per-item.
     """
 
     created: list[AppConfigNode] = Field(

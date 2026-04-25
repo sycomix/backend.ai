@@ -1,4 +1,4 @@
-"""AppConfig (merged view) GraphQL API package (BEP-1052 §5)."""
+"""AppConfig (merged view) GraphQL API package."""
 
 from .resolver import (
     admin_app_configs,

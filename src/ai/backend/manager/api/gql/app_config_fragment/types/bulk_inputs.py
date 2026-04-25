@@ -1,4 +1,4 @@
-"""AppConfigFragment bulk-mutation GQL input types (BEP-1052 §3)."""
+"""AppConfigFragment bulk-mutation GQL input types."""
 
 from __future__ import annotations
 
@@ -52,7 +52,7 @@ class AdminAppConfigFragmentItemInputGQL(PydanticInputMixin[AdminItemInputDTO]):
 @gql_pydantic_input(
     BackendAIGQLMeta(
         added_version=NEXT_RELEASE_VERSION,
-        description="Admin bulk create input — items carry any scope (BEP-1052 §3).",
+        description="Admin bulk create input — items carry any scope.",
     ),
     name="AdminBulkCreateAppConfigFragmentInput",
 )

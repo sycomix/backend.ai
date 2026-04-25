@@ -12,8 +12,6 @@ from .bulk_payloads import (
     AdminBulkPurgeAppConfigFragmentsPayloadGQL,
     AdminBulkUpdateAppConfigFragmentsPayloadGQL,
     AppConfigFragmentBulkErrorGQL,
-    BulkCreateMyAppConfigFragmentsPayloadGQL,
-    BulkUpdateMyAppConfigFragmentsPayloadGQL,
     PurgeAppConfigFragmentKeyGQL,
 )
 from .filters import (
@@ -40,9 +38,7 @@ __all__ = [
     "AppConfigFragmentOrderFieldGQL",
     "AppConfigScopeTypeGQL",
     "BulkCreateMyAppConfigFragmentInputGQL",
-    "BulkCreateMyAppConfigFragmentsPayloadGQL",
     "BulkUpdateMyAppConfigFragmentInputGQL",
-    "BulkUpdateMyAppConfigFragmentsPayloadGQL",
     "MyAppConfigFragmentItemInputGQL",
     "PurgeAppConfigFragmentKeyGQL",
 ]

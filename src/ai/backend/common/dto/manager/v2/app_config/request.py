@@ -1,5 +1,5 @@
 """
-Request DTOs for AppConfig (merged view) DTO v2 (BEP-1052 §5).
+Request DTOs for AppConfig (merged view) DTO v2.
 """
 
 from __future__ import annotations
@@ -62,7 +62,7 @@ class SearchMyAppConfigsInput(_AppConfigSearchInputBase):
     """Input for self-service merged-view search (`/v2/app-configs/my/search`).
 
     The adapter pins the caller as the user scope; no `user_id` argument
-    is accepted here (BEP-1052 §5 — `filter.userId` is ignored).
+    is accepted here.
     """
 
 

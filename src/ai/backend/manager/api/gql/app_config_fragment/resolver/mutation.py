@@ -1,10 +1,14 @@
-"""AppConfigFragment GQL mutation resolvers (bulk-only, BEP-1052 §3)."""
+"""AppConfigFragment GQL mutation resolvers (bulk-only)."""
 
 from __future__ import annotations
 
 from strawberry import Info
 
 from ai.backend.common.meta.meta import NEXT_RELEASE_VERSION
+from ai.backend.manager.api.gql.app_config.types import (
+    BulkCreateMyAppConfigFragmentsPayloadGQL,
+    BulkUpdateMyAppConfigFragmentsPayloadGQL,
+)
 from ai.backend.manager.api.gql.app_config_fragment.types import (
     AdminBulkCreateAppConfigFragmentInputGQL,
     AdminBulkCreateAppConfigFragmentsPayloadGQL,
@@ -13,9 +17,7 @@ from ai.backend.manager.api.gql.app_config_fragment.types import (
     AdminBulkUpdateAppConfigFragmentInputGQL,
     AdminBulkUpdateAppConfigFragmentsPayloadGQL,
     BulkCreateMyAppConfigFragmentInputGQL,
-    BulkCreateMyAppConfigFragmentsPayloadGQL,
     BulkUpdateMyAppConfigFragmentInputGQL,
-    BulkUpdateMyAppConfigFragmentsPayloadGQL,
 )
 from ai.backend.manager.api.gql.decorators import (
     BackendAIGQLMeta,
@@ -33,7 +35,7 @@ from ai.backend.manager.api.gql.utils import check_admin_only
             "and failures are collected per-item (admin only)."
         ),
     )
-)  # type: ignore[misc]
+)
 async def admin_bulk_create_app_config_fragments(
     info: Info[StrawberryGQLContext],
     input: AdminBulkCreateAppConfigFragmentInputGQL,
@@ -51,7 +53,7 @@ async def admin_bulk_create_app_config_fragments(
             "(admin only)."
         ),
     )
-)  # type: ignore[misc]
+)
 async def admin_bulk_update_app_config_fragments(
     info: Info[StrawberryGQLContext],
     input: AdminBulkUpdateAppConfigFragmentInputGQL,
@@ -66,7 +68,7 @@ async def admin_bulk_update_app_config_fragments(
         added_version=NEXT_RELEASE_VERSION,
         description="Cleanup-only deletion; absent keys are no-oped (admin only).",
     )
-)  # type: ignore[misc]
+)
 async def admin_bulk_purge_app_config_fragments(
     info: Info[StrawberryGQLContext],
     input: AdminBulkPurgeAppConfigFragmentInputGQL,
@@ -84,7 +86,7 @@ async def admin_bulk_purge_app_config_fragments(
             "Returns recomputed merged `AppConfig` views."
         ),
     )
-)  # type: ignore[misc]
+)
 async def bulk_create_my_app_config_fragments(
     info: Info[StrawberryGQLContext],
     input: BulkCreateMyAppConfigFragmentInputGQL,
@@ -101,7 +103,7 @@ async def bulk_create_my_app_config_fragments(
             "failures. Returns recomputed merged `AppConfig` views."
         ),
     )
-)  # type: ignore[misc]
+)
 async def bulk_update_my_app_config_fragments(
     info: Info[StrawberryGQLContext],
     input: BulkUpdateMyAppConfigFragmentInputGQL,

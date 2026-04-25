@@ -1,4 +1,4 @@
-"""AppConfig (merged view) GQL query resolvers (BEP-1052 §5)."""
+"""AppConfig (merged view) GQL query resolvers."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ from ai.backend.manager.data.app_config_fragment.types import AppConfigScopeType
         added_version=NEXT_RELEASE_VERSION,
         description=(
             "Caller's own merged AppConfig list (auth required). Chain per policy "
-            "(BEP-1052 §5); the adapter pins `(USER, current_user)` internally."
+            "; the adapter pins `(USER, current_user)` internally."
         ),
     )
 )  # type: ignore[misc]
@@ -108,7 +108,7 @@ async def admin_app_configs(
         added_version=NEXT_RELEASE_VERSION,
         description=(
             "Public (no-auth) `PUBLIC`-scope app-config fragments — the subset of "
-            "raw fragments that carry no personally-scoped data (BEP-1052 §3)."
+            "raw fragments that carry no personally-scoped data."
         ),
     )
 )  # type: ignore[misc]

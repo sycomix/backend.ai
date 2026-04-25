@@ -1,13 +1,13 @@
-"""AppConfigFragment bulk-mutation GQL payload types (BEP-1052 §3)."""
+"""AppConfigFragment bulk-mutation GQL payload types (admin only).
+
+Self-service `my_*` bulk payloads return recomputed merged AppConfig
+views, so they live in `app_config/types/bulk_payloads.py` to keep the
+import direction `app_config -> app_config_fragment` (one-way) and
+avoid a circular import.
+"""
 
 from __future__ import annotations
 
-from ai.backend.common.dto.manager.v2.app_config.response import (
-    BulkCreateMyAppConfigFragmentsPayload as BulkCreateMyPayloadDTO,
-)
-from ai.backend.common.dto.manager.v2.app_config.response import (
-    BulkUpdateMyAppConfigFragmentsPayload as BulkUpdateMyPayloadDTO,
-)
 from ai.backend.common.dto.manager.v2.app_config_fragment.response import (
     AdminBulkCreateAppConfigFragmentsPayload as AdminBulkCreatePayloadDTO,
 )
@@ -25,7 +25,6 @@ from ai.backend.common.dto.manager.v2.app_config_fragment.response import (
 )
 from ai.backend.common.dto.manager.v2.app_config_fragment.types import AppConfigScopeType
 from ai.backend.common.meta.meta import NEXT_RELEASE_VERSION
-from ai.backend.manager.api.gql.app_config.types.node import AppConfigGQL
 from ai.backend.manager.api.gql.app_config_fragment.types.node import AppConfigFragmentGQL
 from ai.backend.manager.api.gql.decorators import (
     BackendAIGQLMeta,
@@ -102,35 +101,5 @@ class AdminBulkUpdateAppConfigFragmentsPayloadGQL(PydanticOutputMixin[AdminBulkU
 class AdminBulkPurgeAppConfigFragmentsPayloadGQL(PydanticOutputMixin[AdminBulkPurgePayloadDTO]):
     purged: list[PurgeAppConfigFragmentKeyGQL] = gql_field(
         description="Keys of rows actually removed (absent keys are no-oped).",
-    )
-    failed: list[AppConfigFragmentBulkErrorGQL] = gql_field(description="Per-item failures.")
-
-
-@gql_pydantic_type(
-    BackendAIGQLMeta(
-        added_version=NEXT_RELEASE_VERSION,
-        description="Payload for `bulkCreateMyAppConfigFragments` (recomputed views).",
-    ),
-    model=BulkCreateMyPayloadDTO,
-    name="BulkCreateMyAppConfigFragmentsPayload",
-)
-class BulkCreateMyAppConfigFragmentsPayloadGQL(PydanticOutputMixin[BulkCreateMyPayloadDTO]):
-    created: list[AppConfigGQL] = gql_field(
-        description="Recomputed merged AppConfig views for each created USER fragment.",
-    )
-    failed: list[AppConfigFragmentBulkErrorGQL] = gql_field(description="Per-item failures.")
-
-
-@gql_pydantic_type(
-    BackendAIGQLMeta(
-        added_version=NEXT_RELEASE_VERSION,
-        description="Payload for `bulkUpdateMyAppConfigFragments` (recomputed views).",
-    ),
-    model=BulkUpdateMyPayloadDTO,
-    name="BulkUpdateMyAppConfigFragmentsPayload",
-)
-class BulkUpdateMyAppConfigFragmentsPayloadGQL(PydanticOutputMixin[BulkUpdateMyPayloadDTO]):
-    updated: list[AppConfigGQL] = gql_field(
-        description="Recomputed merged AppConfig views for each updated USER fragment.",
     )
     failed: list[AppConfigFragmentBulkErrorGQL] = gql_field(description="Per-item failures.")

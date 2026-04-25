@@ -19,10 +19,10 @@ from .types import (
 )
 
 __all__ = [
-    # Queries — scope-bound list belongs on DomainV2 / UserV2 child fields per BEP-1052
+    # Queries — scope-bound list belongs on DomainV2 / UserV2 child fields
     "app_config_fragment",
     "admin_app_config_fragments",
-    # Bulk mutations (BEP-1052 §3 — bulk-only)
+    # Bulk mutations
     "admin_bulk_create_app_config_fragments",
     "admin_bulk_update_app_config_fragments",
     "admin_bulk_purge_app_config_fragments",

@@ -21,7 +21,7 @@ from ai.backend.manager.api.gql.pydantic_compat import PydanticOutputMixin
 AppConfigScopeTypeGQL = gql_enum(
     BackendAIGQLMeta(
         added_version=NEXT_RELEASE_VERSION,
-        description="App-config scope type (BEP-1052 §1).",
+        description="App-config scope type.",
     ),
     AppConfigScopeType,
     name="AppConfigScopeType",
@@ -31,7 +31,7 @@ AppConfigScopeTypeGQL = gql_enum(
 @gql_pydantic_type(
     BackendAIGQLMeta(
         added_version=NEXT_RELEASE_VERSION,
-        description="Raw per-scope app-config fragment (BEP-1052 §2).",
+        description="Raw per-scope app-config fragment.",
     ),
     model=AppConfigFragmentNode,
     name="AppConfigFragment",

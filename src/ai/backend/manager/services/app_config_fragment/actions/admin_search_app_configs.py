@@ -12,7 +12,7 @@ from ai.backend.manager.services.app_config_fragment.actions.base import AppConf
 
 @dataclass
 class AdminSearchAppConfigsAction(AppConfigFragmentAction):
-    """Cross-user merged-view search (admin only, BEP-1052 §5)."""
+    """Cross-user merged-view search(admin only)."""
 
     querier: BatchQuerier
 
