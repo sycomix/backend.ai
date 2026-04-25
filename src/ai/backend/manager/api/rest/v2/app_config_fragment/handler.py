@@ -30,16 +30,28 @@ from ai.backend.manager.data.app_config_fragment.types import (
 )
 
 if TYPE_CHECKING:
+    from ai.backend.manager.api.adapters.app_config import AppConfigAdapter
     from ai.backend.manager.api.adapters.app_config_fragment import AppConfigFragmentAdapter
 
 log: Final = BraceStyleAdapter(logging.getLogger(__spec__.name))
 
 
 class V2AppConfigFragmentHandler:
-    """REST v2 handler for app-config fragment operations."""
+    """REST v2 handler for app-config fragment operations.
 
-    def __init__(self, *, adapter: AppConfigFragmentAdapter) -> None:
+    Self-service `my_bulk_*` writes return recomputed merged
+    `AppConfig` views, so they are dispatched to `AppConfigAdapter`;
+    everything else is the raw-row Fragment surface.
+    """
+
+    def __init__(
+        self,
+        *,
+        adapter: AppConfigFragmentAdapter,
+        app_config_adapter: AppConfigAdapter,
+    ) -> None:
         self._adapter = adapter
+        self._app_config_adapter = app_config_adapter
 
     # ── Reads ────────────────────────────────────────────────────
 
@@ -107,7 +119,7 @@ class V2AppConfigFragmentHandler:
         body: BodyParam[BulkCreateMyAppConfigFragmentsInput],
     ) -> APIResponse:
         """Self-service bulk create on the caller's `USER` row."""
-        result = await self._adapter.my_bulk_create(body.parsed)
+        result = await self._app_config_adapter.my_bulk_create(body.parsed)
         return APIResponse.build(status_code=HTTPStatus.OK, response_model=result)
 
     async def my_bulk_update(
@@ -115,7 +127,7 @@ class V2AppConfigFragmentHandler:
         body: BodyParam[BulkUpdateMyAppConfigFragmentsInput],
     ) -> APIResponse:
         """Self-service bulk update on the caller's `USER` row."""
-        result = await self._adapter.my_bulk_update(body.parsed)
+        result = await self._app_config_adapter.my_bulk_update(body.parsed)
         return APIResponse.build(status_code=HTTPStatus.OK, response_model=result)
 
 

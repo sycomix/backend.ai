@@ -122,7 +122,10 @@ def build_v2_routes(
     # Build all handlers (each takes its individual adapter)
     agent_handler = V2AgentHandler(adapter=adapters.agent)
     app_config_handler = V2AppConfigHandler(adapter=adapters.app_config)
-    app_config_fragment_handler = V2AppConfigFragmentHandler(adapter=adapters.app_config_fragment)
+    app_config_fragment_handler = V2AppConfigFragmentHandler(
+        adapter=adapters.app_config_fragment,
+        app_config_adapter=adapters.app_config,
+    )
     app_config_policy_handler = V2AppConfigPolicyHandler(adapter=adapters.app_config_policy)
     artifact_handler = V2ArtifactHandler(adapter=adapters.artifact)
     artifact_registry_handler = V2ArtifactRegistryHandler(adapter=adapters.artifact_registry)
