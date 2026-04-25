@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from strawberry.scalars import JSON
 
 from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
     AdminAppConfigFragmentItemInput as AdminItemInputDTO,
@@ -46,7 +46,7 @@ from ai.backend.manager.api.gql.pydantic_compat import PydanticInputMixin
 )
 class AdminAppConfigFragmentItemInputGQL(PydanticInputMixin[AdminItemInputDTO]):
     key: AppConfigFragmentKeyInputGQL = gql_field(description="Natural-key identifier.")
-    extra_config: dict[str, Any] = gql_field(description="Raw configuration payload.")
+    extra_config: JSON = gql_field(description="Raw configuration payload.")
 
 
 @gql_pydantic_input(
@@ -91,7 +91,7 @@ class AdminBulkPurgeAppConfigFragmentInputGQL(PydanticInputMixin[AdminBulkPurgeI
 )
 class MyAppConfigFragmentItemInputGQL(PydanticInputMixin[MyItemInputDTO]):
     name: str = gql_field(description="Policy name.")
-    extra_config: dict[str, Any] = gql_field(description="Raw configuration payload.")
+    extra_config: JSON = gql_field(description="Raw configuration payload.")
 
 
 @gql_pydantic_input(

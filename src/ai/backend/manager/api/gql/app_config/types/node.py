@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any
 from uuid import UUID
+
+from strawberry.scalars import JSON
 
 from ai.backend.common.dto.manager.v2.app_config.response import AppConfigNode
 from ai.backend.common.meta.meta import NEXT_RELEASE_VERSION
@@ -34,6 +35,6 @@ class AppConfigGQL(PydanticOutputMixin[AppConfigNode]):
     fragments: list[AppConfigFragmentGQL] = gql_field(
         description="Contributing fragments in merge order (low → high).",
     )
-    config: dict[str, Any] | None = gql_field(
+    config: JSON | None = gql_field(
         description="Deep-merged configuration, or null when every fragment is empty.",
     )

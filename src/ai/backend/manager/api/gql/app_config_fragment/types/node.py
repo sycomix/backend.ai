@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
 from uuid import UUID
+
+from strawberry.scalars import JSON
 
 from ai.backend.common.dto.manager.v2.app_config_fragment.response import AppConfigFragmentNode
 from ai.backend.common.dto.manager.v2.app_config_fragment.types import AppConfigScopeType
@@ -41,7 +42,7 @@ class AppConfigFragmentGQL(PydanticOutputMixin[AppConfigFragmentNode]):
     scope_type: AppConfigScopeType = gql_field(description="Scope type.")
     scope_id: str = gql_field(description="Scope id.")
     name: str = gql_field(description="Policy name (FK to app_config_policies).")
-    extra_config: dict[str, Any] | None = gql_field(
+    extra_config: JSON | None = gql_field(
         description="Raw configuration payload, or null."
     )
     created_at: datetime = gql_field(description="Creation timestamp.")
