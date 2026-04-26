@@ -9,6 +9,10 @@ from pydantic import Field
 from ai.backend.common.api_handlers import BaseRequestModel
 
 
+class AppConfigPolicyConfigNamePathParam(BaseRequestModel):
+    config_name: str = Field(description="App-config policy `config_name`")
+
+
 class DomainNamePathParam(BaseRequestModel):
     domain_name: str = Field(description="Domain name")
 
