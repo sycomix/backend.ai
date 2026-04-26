@@ -50,7 +50,7 @@ class AppConfigFragmentRepository:
     """Read-side repository for AppConfigFragment.
 
     Scope-bound reads on raw fragments plus the per-user merged
-    `AppConfig` view (BEP-1052 §5). Mutations and admin cross-scope
+    `AppConfig` view. Mutations and admin cross-scope
     reads live on `AppConfigFragmentAdminRepository`. Retry + metric
     policies are applied at the DB-source layer; the merged-view read
     path is fronted by a Valkey cache so repeated WebUI bootstrap

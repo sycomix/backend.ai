@@ -2,7 +2,7 @@
 
 The hot path is `AppConfigFragmentRepository.app_config(user_id, name)`,
 the per-`(user, name)` deep-merge of every contributing fragment in
-the policy's `scope_sources` chain (BEP-1052 §5). Each merged value
+the policy's `scope_sources` chain. Each merged value
 gets cached under `app_config:merged:{user_id}:{name}` with a TTL,
 and is invalidated whenever a contributing fragment changes.
 
