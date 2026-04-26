@@ -33,7 +33,7 @@ class AppConfigFragmentNode(BaseResponseModel):
     scope_type: AppConfigScopeType = Field(description="Scope type.")
     scope_id: str = Field(description="Scope id.")
     name: str = Field(description="Policy name (FK target).")
-    extra_config: dict[str, Any] | None = Field(
+    config: dict[str, Any] | None = Field(
         default=None, description="Raw configuration payload, or null."
     )
     created_at: datetime = Field(description="Creation timestamp.")

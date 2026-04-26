@@ -14,7 +14,7 @@ class AppConfigFragmentBulkItem:
     """One item for `adminBulkCreate/Update` — natural key + payload."""
 
     key: AppConfigFragmentKey
-    extra_config: Mapping[str, Any]
+    config: Mapping[str, Any]
 
 
 @dataclass(frozen=True)
@@ -26,7 +26,7 @@ class MyAppConfigFragmentBulkItem:
     """
 
     name: str
-    extra_config: Mapping[str, Any]
+    config: Mapping[str, Any]
 
 
 @dataclass(frozen=True)

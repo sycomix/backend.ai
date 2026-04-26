@@ -101,7 +101,7 @@ class AppConfigFragmentService:
         failed: list[AppConfigFragmentBulkItemError] = []
         for index, item in enumerate(action.items):
             try:
-                fragment = await self._admin_repository.create(item.key, item.extra_config)
+                fragment = await self._admin_repository.create(item.key, item.config)
                 created.append(fragment)
             except Exception as e:
                 log.warning("admin_bulk_create item {} failed: {}", index, e)
@@ -125,7 +125,7 @@ class AppConfigFragmentService:
         failed: list[AppConfigFragmentBulkItemError] = []
         for index, item in enumerate(action.items):
             try:
-                fragment = await self._admin_repository.update(item.key, item.extra_config)
+                fragment = await self._admin_repository.update(item.key, item.config)
                 updated.append(fragment)
             except Exception as e:
                 log.warning("admin_bulk_update item {} failed: {}", index, e)
@@ -185,7 +185,7 @@ class AppConfigFragmentService:
                 name=item.name,
             )
             try:
-                await self._admin_repository.create(key, item.extra_config)
+                await self._admin_repository.create(key, item.config)
                 merged = await self._repository.app_config(user_id, item.name)
                 created.append(merged)
             except Exception as e:
@@ -219,7 +219,7 @@ class AppConfigFragmentService:
                 name=item.name,
             )
             try:
-                await self._admin_repository.update(key, item.extra_config)
+                await self._admin_repository.update(key, item.config)
                 merged = await self._repository.app_config(user_id, item.name)
                 updated.append(merged)
             except Exception as e:

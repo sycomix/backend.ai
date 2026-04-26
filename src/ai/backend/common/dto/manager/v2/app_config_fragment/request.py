@@ -63,7 +63,7 @@ class AdminAppConfigFragmentItemInput(BaseRequestModel):
     """Per-item input for admin bulk create / update (natural key + payload)."""
 
     key: AppConfigFragmentKeyInput = Field(description="Natural-key identifier.")
-    extra_config: dict[str, Any] = Field(
+    config: dict[str, Any] = Field(
         default_factory=dict,
         description="Raw configuration payload (empty dict clears the row).",
     )
@@ -87,7 +87,7 @@ class MyAppConfigFragmentItemInput(BaseRequestModel):
     """
 
     name: str = Field(description="Policy name.")
-    extra_config: dict[str, Any] = Field(
+    config: dict[str, Any] = Field(
         default_factory=dict,
         description="Raw configuration payload (empty dict clears the row).",
     )

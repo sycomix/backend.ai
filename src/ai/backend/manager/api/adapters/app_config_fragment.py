@@ -217,7 +217,7 @@ class AppConfigFragmentAdapter(BaseAdapter):
             scope_type=DTOAppConfigScopeType(data.scope_type.value),
             scope_id=data.scope_id,
             name=data.name,
-            extra_config=dict(data.extra_config) if data.extra_config is not None else None,
+            config=dict(data.config) if data.config is not None else None,
             created_at=data.created_at,
             updated_at=data.updated_at,
         )
@@ -235,7 +235,7 @@ class AppConfigFragmentAdapter(BaseAdapter):
         items = [
             AppConfigFragmentBulkItem(
                 key=self._input_to_key(item.key),
-                extra_config=dict(item.extra_config),
+                config=dict(item.config),
             )
             for item in input.items
         ]
@@ -254,7 +254,7 @@ class AppConfigFragmentAdapter(BaseAdapter):
         items = [
             AppConfigFragmentBulkItem(
                 key=self._input_to_key(item.key),
-                extra_config=dict(item.extra_config),
+                config=dict(item.config),
             )
             for item in input.items
         ]
