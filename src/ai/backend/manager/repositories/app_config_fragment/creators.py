@@ -26,8 +26,8 @@ class AppConfigFragmentCreatorSpec(CreatorSpec[AppConfigFragmentRow]):
     Maps DB constraint violations onto typed domain errors:
     - ``(scope_type, scope_id, name)`` UNIQUE → :class:`AppConfigFragmentConflict`
     - ``name`` FK to `app_config_policies.config_name` →
-      :class:`AppConfigFragmentPolicyMissing` (BEP-1052 §1 required-policy
-      invariant enforced as defense-in-depth).
+      :class:`AppConfigFragmentPolicyMissing` (required-policy invariant
+      enforced as defense-in-depth).
     """
 
     scope_type: str

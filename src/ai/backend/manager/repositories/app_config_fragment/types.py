@@ -40,7 +40,7 @@ class AppConfigFragmentSearchScope(SearchScope):
 
 @dataclass(frozen=True)
 class UserAppConfigSearchScope(SearchScope):
-    """Pin merged-view search to a target `user_id` (BEP-1052 §5)."""
+    """Pin merged-view search to a target `user_id`."""
 
     user_id: uuid.UUID
 

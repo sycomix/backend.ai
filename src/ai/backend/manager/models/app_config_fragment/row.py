@@ -45,7 +45,7 @@ class AppConfigFragmentRow(Base):  # type: ignore[misc]
         "name",
         sa.String(length=128),
         # FK to `app_config_policies.config_name` (default NO ACTION) —
-        # enforces the required-policy invariant from BEP-1052 §1.
+        # enforces the required-policy invariant.
         sa.ForeignKey(
             "app_config_policies.config_name",
             name="fk_app_config_fragments_name_app_config_policies_config_name",

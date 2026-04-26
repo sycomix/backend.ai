@@ -75,9 +75,9 @@ class AppConfigFragmentDBSource:
     """Database operations for `app_config_fragments`.
 
     Two roles:
-    1. Raw CRUD on `(scope_type, scope_id, name)` rows (BEP-1052 §2).
+    1. Raw CRUD on `(scope_type, scope_id, name)` rows.
     2. Merge-side reads that resolve a user's `AppConfig` view by joining
-       `app_config_policies` to derive the chain (BEP-1052 §5).
+       `app_config_policies` to derive the chain.
     """
 
     _db: ExtendedAsyncSAEngine
@@ -220,7 +220,7 @@ class AppConfigFragmentDBSource:
                 has_previous_page=result.has_previous_page,
             )
 
-    # ── Merged-view reads (AppConfig, BEP-1052 §5) ────────────────
+    # ── Merged-view reads (AppConfig) ─────────────────────────────
 
     @staticmethod
     def _merge_chain(
@@ -228,8 +228,7 @@ class AppConfigFragmentDBSource:
         chain: Sequence[str],
     ) -> _MergedChain:
         """Order `rows` by `chain` (low → high) and deep-merge their
-        `extra_config` in that order. Empty result projects to `None`
-        per BEP-1052 §3 null projection.
+        `extra_config` in that order. Empty result projects to `None`.
 
         Shared by the single-doc and search merge methods so both paths
         produce the same shape.

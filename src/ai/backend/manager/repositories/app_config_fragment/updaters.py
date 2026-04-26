@@ -16,7 +16,7 @@ class AppConfigFragmentUpdaterSpec(UpdaterSpec[AppConfigFragmentRow]):
 
     Only `extra_config` is mutable — the ``(scope_type, scope_id, name)``
     natural key is fixed; changing any of those is a new row, not an
-    update (BEP-1052 §1).
+    update.
     """
 
     extra_config: Mapping[str, Any]

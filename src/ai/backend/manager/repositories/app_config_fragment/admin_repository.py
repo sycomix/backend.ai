@@ -3,6 +3,11 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from ai.backend.common.exception import BackendAIError
+from ai.backend.common.metrics.metric import DomainType, LayerType
+from ai.backend.common.resilience.policies.metrics import MetricArgs, MetricPolicy
+from ai.backend.common.resilience.policies.retry import BackoffStrategy, RetryArgs, RetryPolicy
+from ai.backend.common.resilience.resilience import Resilience
 from ai.backend.manager.data.app_config.types import AppConfigSearchResult
 from ai.backend.manager.data.app_config_fragment.types import (
     AppConfigFragmentData,
@@ -23,6 +28,25 @@ from ai.backend.manager.repositories.app_config_fragment.updaters import (
 from ai.backend.manager.repositories.base.creator import Creator
 from ai.backend.manager.repositories.base.querier import BatchQuerier
 
+app_config_fragment_admin_repository_resilience = Resilience(
+    policies=[
+        MetricPolicy(
+            MetricArgs(
+                domain=DomainType.REPOSITORY,
+                layer=LayerType.APP_CONFIG_FRAGMENT_ADMIN_REPOSITORY,
+            )
+        ),
+        RetryPolicy(
+            RetryArgs(
+                max_retries=5,
+                retry_delay=0.1,
+                backoff_strategy=BackoffStrategy.FIXED,
+                non_retryable_exceptions=(BackendAIError,),
+            )
+        ),
+    ]
+)
+
 
 class AppConfigFragmentAdminRepository:
     """Admin-only operations on AppConfigFragment.
@@ -33,12 +57,10 @@ class AppConfigFragmentAdminRepository:
     `AppConfigFragmentRepository`. Authorization is enforced at the
     service layer before reaching either repository.
 
-    The required-policy invariant from BEP-1052 §1 is enforced by the
-    service layer; the FK on `app_config_fragments.name` is the
-    defense-in-depth backstop, translated by the creator spec into
+    The required-policy invariant is enforced by the service layer;
+    the FK on `app_config_fragments.name` is the defense-in-depth
+    backstop, translated by the creator spec into
     :class:`AppConfigFragmentPolicyMissing`.
-
-    Retry + metric policies are applied at the DB-source layer.
     """
 
     _db_source: AppConfigFragmentDBSource
@@ -48,6 +70,7 @@ class AppConfigFragmentAdminRepository:
 
     # ── Mutations ─────────────────────────────────────────────────
 
+    @app_config_fragment_admin_repository_resilience.apply()
     async def create(
         self,
         key: AppConfigFragmentKey,
@@ -63,6 +86,7 @@ class AppConfigFragmentAdminRepository:
         )
         return await self._db_source.create(creator)
 
+    @app_config_fragment_admin_repository_resilience.apply()
     async def update(
         self,
         key: AppConfigFragmentKey,
@@ -73,17 +97,20 @@ class AppConfigFragmentAdminRepository:
         spec = AppConfigFragmentUpdaterSpec(extra_config=extra_config)
         return await self._db_source.update(key, spec)
 
+    @app_config_fragment_admin_repository_resilience.apply()
     async def purge(self, key: AppConfigFragmentKey) -> bool:
         return await self._db_source.purge(key)
 
     # ── Cross-scope reads ────────────────────────────────────────
 
+    @app_config_fragment_admin_repository_resilience.apply()
     async def admin_search(
         self,
         querier: BatchQuerier,
     ) -> AppConfigFragmentSearchResult:
         return await self._db_source.admin_search(querier)
 
+    @app_config_fragment_admin_repository_resilience.apply()
     async def admin_search_app_configs(
         self,
         querier: BatchQuerier,

@@ -1,10 +1,9 @@
 """add app_config_fragments table
 
-Lands the AppConfigFragment slice of the BEP-1052 (Scoped App Config
-Redesign) data-layer foundation: per-scope raw rows keyed by
+Adds the per-scope raw fragment table keyed by
 `(scope_type, scope_id, name)`. `name` is a FK to
-`app_config_policies.config_name` with default NO ACTION (the
-required-policy invariant — see BEP-1052 §1).
+`app_config_policies.config_name` with default NO ACTION enforcing the
+required-policy invariant.
 
 Stacks on top of `5df264862995_add_app_config_policies.py`; the
 policy table must exist before the FK can be created.

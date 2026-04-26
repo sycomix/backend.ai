@@ -61,9 +61,9 @@ class AppConfigFragmentNotFound(ObjectNotFound):
 class AppConfigFragmentPolicyMissing(BackendAIError, web.HTTPConflict):
     """Raised when a fragment references a `name` without a matching policy row.
 
-    Defense-in-depth against the required-policy invariant from
-    BEP-1052 §1 — normally the service layer rejects earlier, but the
-    FK violation surfaces here if the service check is bypassed.
+    Defense-in-depth against the required-policy invariant — normally
+    the service layer rejects earlier, but the FK violation surfaces
+    here if the service check is bypassed.
     """
 
     error_type = "https://api.backend.ai/probs/app-config-fragment-policy-missing"

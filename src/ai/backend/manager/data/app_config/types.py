@@ -10,7 +10,7 @@ from ai.backend.manager.data.app_config_fragment.types import AppConfigFragmentD
 
 @dataclass(frozen=True)
 class AppConfigData:
-    """Service-layer return type for the merged AppConfig view (BEP-1052 §5).
+    """Service-layer return type for the merged AppConfig view.
 
     `fragments` are ordered low → high merge priority (matching the
     policy's `scope_sources`). `config` is the deep-merged result,

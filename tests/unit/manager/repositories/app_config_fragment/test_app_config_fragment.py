@@ -221,10 +221,10 @@ class TestAppConfigFragmentAdminRepository:
         self,
         admin_repository: AppConfigFragmentAdminRepository,
     ) -> None:
-        # Required-policy invariant (BEP-1052 §1) — DB-level FK is the
-        # backstop when the service layer's check is bypassed. The
-        # creator spec translates the `ForeignKeyViolationError` into
-        # the typed `AppConfigFragmentPolicyMissing` domain error.
+        # Required-policy invariant — the DB-level FK is the backstop
+        # when the service layer's check is bypassed. The creator spec
+        # translates the `ForeignKeyViolationError` into the typed
+        # `AppConfigFragmentPolicyMissing` domain error.
         with pytest.raises(AppConfigFragmentPolicyMissing):
             await admin_repository.create(
                 key=AppConfigFragmentKey(
