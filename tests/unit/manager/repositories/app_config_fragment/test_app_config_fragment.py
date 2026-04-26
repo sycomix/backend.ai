@@ -10,10 +10,8 @@ from ai.backend.manager.data.app_config_fragment.types import (
     AppConfigFragmentKey,
     AppConfigScopeType,
 )
-from ai.backend.manager.errors.app_config import (
-    AppConfigFragmentNotFound,
-    AppConfigFragmentPolicyMissing,
-)
+from ai.backend.manager.errors.app_config import AppConfigFragmentNotFound
+from ai.backend.manager.errors.repository import ForeignKeyViolationError
 from ai.backend.manager.models.app_config_fragment.row import AppConfigFragmentRow
 from ai.backend.manager.models.app_config_policy.row import AppConfigPolicyRow
 from ai.backend.manager.models.utils import ExtendedAsyncSAEngine
@@ -77,19 +75,19 @@ class TestAppConfigFragmentRepository:
         )
         created = await admin_repository.create(
             key=key,
-            extra_config={"color": "blue"},
+            config={"color": "blue"},
         )
         assert created.scope_type == AppConfigScopeType.DOMAIN
         assert created.scope_id == "default"
         assert created.name == "theme"
-        assert created.extra_config is not None
-        assert dict(created.extra_config) == {"color": "blue"}
+        assert created.config is not None
+        assert dict(created.config) == {"color": "blue"}
 
         fetched = await repository.get(key)
         assert fetched is not None
         assert fetched.id == created.id
-        assert fetched.extra_config is not None
-        assert dict(fetched.extra_config) == {"color": "blue"}
+        assert fetched.config is not None
+        assert dict(fetched.config) == {"color": "blue"}
 
     async def test_get_by_id(
         self,
@@ -103,14 +101,14 @@ class TestAppConfigFragmentRepository:
                 scope_id="public",
                 name="theme",
             ),
-            extra_config={"density": "comfortable"},
+            config={"density": "comfortable"},
         )
 
         fetched = await repository.get_by_id(created.id)
         assert fetched is not None
         assert fetched.scope_type == AppConfigScopeType.PUBLIC
-        assert fetched.extra_config is not None
-        assert dict(fetched.extra_config) == {"density": "comfortable"}
+        assert fetched.config is not None
+        assert dict(fetched.config) == {"density": "comfortable"}
 
     async def test_get_returns_none_for_missing_key(
         self,
@@ -157,7 +155,7 @@ class TestAppConfigFragmentAdminRepository:
         )
         yield
 
-    async def test_update_replaces_extra_config(
+    async def test_update_replaces_config(
         self,
         policy_for_theme: None,
         admin_repository: AppConfigFragmentAdminRepository,
@@ -167,13 +165,13 @@ class TestAppConfigFragmentAdminRepository:
             scope_id="default",
             name="theme",
         )
-        await admin_repository.create(key=key, extra_config={"color": "blue"})
+        await admin_repository.create(key=key, config={"color": "blue"})
         updated = await admin_repository.update(
-            key=key, extra_config={"color": "red", "density": "compact"}
+            key=key, config={"color": "red", "density": "compact"}
         )
         assert updated is not None
-        assert updated.extra_config is not None
-        assert dict(updated.extra_config) == {"color": "red", "density": "compact"}
+        assert updated.config is not None
+        assert dict(updated.config) == {"color": "red", "density": "compact"}
 
     async def test_update_raises_for_missing_key(
         self,
@@ -186,7 +184,7 @@ class TestAppConfigFragmentAdminRepository:
                     scope_id="missing",
                     name="theme",
                 ),
-                extra_config={"color": "blue"},
+                config={"color": "blue"},
             )
 
     async def test_purge_existing_fragment_returns_true(
@@ -199,7 +197,7 @@ class TestAppConfigFragmentAdminRepository:
             scope_id="default",
             name="theme",
         )
-        await admin_repository.create(key=key, extra_config={})
+        await admin_repository.create(key=key, config={})
         assert await admin_repository.purge(key) is True
 
     async def test_purge_missing_fragment_returns_false(
@@ -221,16 +219,15 @@ class TestAppConfigFragmentAdminRepository:
         self,
         admin_repository: AppConfigFragmentAdminRepository,
     ) -> None:
-        # Required-policy invariant — the DB-level FK is the backstop
-        # when the service layer's check is bypassed. The creator spec
-        # translates the `ForeignKeyViolationError` into the typed
-        # `AppConfigFragmentPolicyMissing` domain error.
-        with pytest.raises(AppConfigFragmentPolicyMissing):
+        # Service-layer rejects missing policies up front; the DB FK
+        # is the defense-in-depth backstop and surfaces as a generic
+        # ForeignKeyViolationError.
+        with pytest.raises(ForeignKeyViolationError):
             await admin_repository.create(
                 key=AppConfigFragmentKey(
                     scope_type=AppConfigScopeType.DOMAIN,
                     scope_id="default",
                     name="no-such-policy",
                 ),
-                extra_config={"color": "blue"},
+                config={"color": "blue"},
             )

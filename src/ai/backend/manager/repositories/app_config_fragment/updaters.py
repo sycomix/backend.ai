@@ -14,12 +14,12 @@ from ai.backend.manager.repositories.base.updater import UpdaterSpec
 class AppConfigFragmentUpdaterSpec(UpdaterSpec[AppConfigFragmentRow]):
     """UpdaterSpec for `app_config_fragments`.
 
-    Only `extra_config` is mutable — the ``(scope_type, scope_id, name)``
+    Only `config` is mutable — the ``(scope_type, scope_id, name)``
     natural key is fixed; changing any of those is a new row, not an
     update.
     """
 
-    extra_config: Mapping[str, Any]
+    config: Mapping[str, Any]
 
     @property
     @override
@@ -28,4 +28,4 @@ class AppConfigFragmentUpdaterSpec(UpdaterSpec[AppConfigFragmentRow]):
 
     @override
     def build_values(self) -> dict[str, Any]:
-        return {"extra_config": dict(self.extra_config)}
+        return {"config": dict(self.config)}

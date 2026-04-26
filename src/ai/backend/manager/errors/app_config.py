@@ -56,22 +56,3 @@ class AppConfigFragmentNotFound(ObjectNotFound):
             operation=ErrorOperation.READ,
             error_detail=ErrorDetail.NOT_FOUND,
         )
-
-
-class AppConfigFragmentPolicyMissing(BackendAIError, web.HTTPConflict):
-    """Raised when a fragment references a `name` without a matching policy row.
-
-    Defense-in-depth against the required-policy invariant — normally
-    the service layer rejects earlier, but the FK violation surfaces
-    here if the service check is bypassed.
-    """
-
-    error_type = "https://api.backend.ai/probs/app-config-fragment-policy-missing"
-    error_title = "Referenced app-config policy does not exist for this fragment."
-
-    def error_code(self) -> ErrorCode:
-        return ErrorCode(
-            domain=ErrorDomain.BACKENDAI,
-            operation=ErrorOperation.CREATE,
-            error_detail=ErrorDetail.CONFLICT,
-        )

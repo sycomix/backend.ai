@@ -20,7 +20,6 @@ from ai.backend.manager.data.app_config_fragment.types import (
     AppConfigFragmentSearchResult,
     AppConfigScopeType,
 )
-from ai.backend.manager.errors.app_config import AppConfigFragmentNotFound
 from ai.backend.manager.models.app_config_fragment.row import AppConfigFragmentRow
 from ai.backend.manager.models.app_config_policy.row import AppConfigPolicyRow
 from ai.backend.manager.models.user import UserRow
@@ -28,9 +27,6 @@ from ai.backend.manager.models.utils import ExtendedAsyncSAEngine
 from ai.backend.manager.repositories.app_config_fragment.types import (
     AppConfigFragmentSearchScope,
     UserAppConfigSearchScope,
-)
-from ai.backend.manager.repositories.app_config_fragment.updaters import (
-    AppConfigFragmentUpdaterSpec,
 )
 from ai.backend.manager.repositories.base.creator import Creator, execute_creator
 from ai.backend.manager.repositories.base.purger import Purger, execute_purger
@@ -111,76 +107,48 @@ class AppConfigFragmentDBSource:
     async def create(self, creator: Creator[AppConfigFragmentRow]) -> AppConfigFragmentData:
         """Insert a new fragment via the shared Creator helper.
 
-        Constraint violations translate to typed domain errors via the
-        spec's ``integrity_error_checks`` (duplicate key →
-        :class:`AppConfigFragmentConflict`, missing-policy FK →
-        :class:`AppConfigFragmentPolicyMissing`).
+        The natural-key UNIQUE violation translates to
+        :class:`AppConfigFragmentConflict` via the spec's
+        ``integrity_error_checks``. The required-policy invariant
+        (FK on ``name``) is enforced upstream by the service layer;
+        a bypass here surfaces as a generic integrity error.
         """
         async with self._db.begin_session() as db_sess:
             result = await execute_creator(db_sess, creator)
             return result.row.to_data()
 
     @app_config_fragment_db_source_resilience.apply()
-    async def update(
+    async def resolve_pk_by_key(
         self,
         key: AppConfigFragmentKey,
-        spec: AppConfigFragmentUpdaterSpec,
-    ) -> AppConfigFragmentData:
-        """Update the fragment identified by its natural key.
-
-        The natural key ``(scope_type, scope_id, name)`` is not the PK,
-        so we first resolve it to the row's UUID `id` and then delegate
-        to the shared Updater helper (single-column PK required). Raises
-        :class:`AppConfigFragmentNotFound` when no row exists for the
-        key (or vanishes between resolve and write); reads use the
-        nullable `get(...)` instead.
-        """
-
-        def _missing() -> AppConfigFragmentNotFound:
-            return AppConfigFragmentNotFound(
-                extra_msg=(
-                    f"scope_type={key.scope_type.value!r}, "
-                    f"scope_id={key.scope_id!r}, name={key.name!r}"
-                ),
-            )
-
-        async with self._db.begin_session() as db_sess:
-            pk_value = await db_sess.scalar(
+    ) -> uuid.UUID | None:
+        """Resolve the natural key ``(scope_type, scope_id, name)`` to
+        the row's UUID ``id``. Returns ``None`` when no row matches —
+        callers translate to a domain-appropriate response."""
+        async with self._db.begin_readonly_session() as db_sess:
+            pk: uuid.UUID | None = await db_sess.scalar(
                 sa.select(AppConfigFragmentRow.id).where(
                     AppConfigFragmentRow.scope_type == key.scope_type,
                     AppConfigFragmentRow.scope_id == key.scope_id,
                     AppConfigFragmentRow.name == key.name,
                 )
             )
-            if pk_value is None:
-                raise _missing()
-            updater: Updater[AppConfigFragmentRow] = Updater(spec=spec, pk_value=pk_value)
-            result = await execute_updater(db_sess, updater)
-            if result is None:
-                raise _missing()
-            return result.row.to_data()
+            return pk
 
     @app_config_fragment_db_source_resilience.apply()
-    async def purge(self, key: AppConfigFragmentKey) -> bool:
-        """Delete the fragment identified by the natural key.
-
-        Resolves the natural key to the row's UUID `id` and delegates
-        to the shared Purger helper. Returns `True` when a row was
-        actually removed.
-        """
+    async def update(self, updater: Updater[AppConfigFragmentRow]) -> AppConfigFragmentData | None:
+        """Apply a pre-built Updater. Returns ``None`` when the row
+        vanished between PK resolution and write; the caller maps this
+        to :class:`AppConfigFragmentNotFound`."""
         async with self._db.begin_session() as db_sess:
-            pk_value = await db_sess.scalar(
-                sa.select(AppConfigFragmentRow.id).where(
-                    AppConfigFragmentRow.scope_type == key.scope_type,
-                    AppConfigFragmentRow.scope_id == key.scope_id,
-                    AppConfigFragmentRow.name == key.name,
-                )
-            )
-            if pk_value is None:
-                return False
-            purger: Purger[AppConfigFragmentRow] = Purger(
-                row_class=AppConfigFragmentRow, pk_value=pk_value
-            )
+            result = await execute_updater(db_sess, updater)
+            return result.row.to_data() if result is not None else None
+
+    @app_config_fragment_db_source_resilience.apply()
+    async def purge(self, purger: Purger[AppConfigFragmentRow]) -> bool:
+        """Apply a pre-built Purger. Returns ``True`` when a row was
+        actually removed (``False`` if the row vanished concurrently)."""
+        async with self._db.begin_session() as db_sess:
             result = await execute_purger(db_sess, purger)
             return result is not None
 
@@ -228,7 +196,7 @@ class AppConfigFragmentDBSource:
         chain: Sequence[str],
     ) -> _MergedChain:
         """Order `rows` by `chain` (low → high) and deep-merge their
-        `extra_config` in that order. Empty result projects to `None`.
+        `config` in that order. Empty result projects to `None`.
 
         Shared by the single-doc and search merge methods so both paths
         produce the same shape.
@@ -239,9 +207,9 @@ class AppConfigFragmentDBSource:
         ]
         merged: Mapping[str, Any] = {}
         for row in ordered:
-            if row.extra_config is None:
+            if row.config is None:
                 continue
-            merged = deep_merge(merged, row.extra_config)
+            merged = deep_merge(merged, row.config)
         return _MergedChain(
             fragments=[row.to_data() for row in ordered],
             config=(merged or None),

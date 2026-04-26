@@ -30,7 +30,7 @@ class AppConfigFragmentData:
     scope_type: AppConfigScopeType
     scope_id: str
     name: str
-    extra_config: Mapping[str, Any] | None
+    config: Mapping[str, Any] | None
     created_at: datetime
     updated_at: datetime | None
 

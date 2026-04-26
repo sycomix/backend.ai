@@ -53,7 +53,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column(
-            "extra_config",
+            "config",
             pgsql.JSONB(),
             nullable=True,
         ),

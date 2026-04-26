@@ -52,8 +52,8 @@ class AppConfigFragmentRow(Base):  # type: ignore[misc]
         ),
         nullable=False,
     )
-    extra_config: Mapped[Mapping[str, Any] | None] = mapped_column(
-        "extra_config",
+    config: Mapped[Mapping[str, Any] | None] = mapped_column(
+        "config",
         pgsql.JSONB,
         nullable=True,
     )
@@ -76,7 +76,7 @@ class AppConfigFragmentRow(Base):  # type: ignore[misc]
             scope_type=self.scope_type,
             scope_id=self.scope_id,
             name=self.name,
-            extra_config=dict(self.extra_config) if self.extra_config is not None else None,
+            config=dict(self.config) if self.config is not None else None,
             created_at=self.created_at,
             updated_at=self.updated_at,
         )

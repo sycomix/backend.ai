@@ -14,6 +14,7 @@ from ai.backend.manager.data.app_config_fragment.types import (
     AppConfigFragmentKey,
     AppConfigFragmentSearchResult,
 )
+from ai.backend.manager.errors.app_config import AppConfigFragmentNotFound
 from ai.backend.manager.models.app_config_fragment.row import AppConfigFragmentRow
 from ai.backend.manager.models.utils import ExtendedAsyncSAEngine
 from ai.backend.manager.repositories.app_config_fragment.creators import (
@@ -26,7 +27,9 @@ from ai.backend.manager.repositories.app_config_fragment.updaters import (
     AppConfigFragmentUpdaterSpec,
 )
 from ai.backend.manager.repositories.base.creator import Creator
+from ai.backend.manager.repositories.base.purger import Purger
 from ai.backend.manager.repositories.base.querier import BatchQuerier
+from ai.backend.manager.repositories.base.updater import Updater
 
 app_config_fragment_admin_repository_resilience = Resilience(
     policies=[
@@ -48,6 +51,14 @@ app_config_fragment_admin_repository_resilience = Resilience(
 )
 
 
+def _missing(key: AppConfigFragmentKey) -> AppConfigFragmentNotFound:
+    return AppConfigFragmentNotFound(
+        extra_msg=(
+            f"scope_type={key.scope_type.value!r}, scope_id={key.scope_id!r}, name={key.name!r}"
+        ),
+    )
+
+
 class AppConfigFragmentAdminRepository:
     """Admin-only operations on AppConfigFragment.
 
@@ -55,12 +66,14 @@ class AppConfigFragmentAdminRepository:
     reads (`admin_search` raw, `admin_search_app_configs` merged)
     live here — read-side scope-bound operations are on
     `AppConfigFragmentRepository`. Authorization is enforced at the
-    service layer before reaching either repository.
+    service layer before reaching either repository. The required-
+    policy invariant is enforced upstream by the service layer; the
+    DB-level FK on ``app_config_fragments.name`` is the defense-in-
+    depth backstop and surfaces as a generic integrity error.
 
-    The required-policy invariant is enforced by the service layer;
-    the FK on `app_config_fragments.name` is the defense-in-depth
-    backstop, translated by the creator spec into
-    :class:`AppConfigFragmentPolicyMissing`.
+    Mutations are routed through the shared Creator / Updater / Purger
+    helpers so the same execution / resilience plumbing applies as in
+    sister repositories.
     """
 
     _db_source: AppConfigFragmentDBSource
@@ -74,14 +87,14 @@ class AppConfigFragmentAdminRepository:
     async def create(
         self,
         key: AppConfigFragmentKey,
-        extra_config: Mapping[str, Any],
+        config: Mapping[str, Any],
     ) -> AppConfigFragmentData:
         creator: Creator[AppConfigFragmentRow] = Creator(
             spec=AppConfigFragmentCreatorSpec(
                 scope_type=key.scope_type,
                 scope_id=key.scope_id,
                 name=key.name,
-                extra_config=extra_config,
+                config=config,
             ),
         )
         return await self._db_source.create(creator)
@@ -90,16 +103,37 @@ class AppConfigFragmentAdminRepository:
     async def update(
         self,
         key: AppConfigFragmentKey,
-        extra_config: Mapping[str, Any],
+        config: Mapping[str, Any],
     ) -> AppConfigFragmentData:
-        """Update a fragment by natural key. Raises
-        ``AppConfigFragmentNotFound`` when missing."""
-        spec = AppConfigFragmentUpdaterSpec(extra_config=extra_config)
-        return await self._db_source.update(key, spec)
+        """Update a fragment by natural key. Resolves the natural key
+        to the row's UUID, builds an ``Updater``, and delegates to the
+        DB source. Raises :class:`AppConfigFragmentNotFound` when the
+        row is missing (or vanishes between resolve and write)."""
+        pk_value = await self._db_source.resolve_pk_by_key(key)
+        if pk_value is None:
+            raise _missing(key)
+        updater: Updater[AppConfigFragmentRow] = Updater(
+            spec=AppConfigFragmentUpdaterSpec(config=config),
+            pk_value=pk_value,
+        )
+        result = await self._db_source.update(updater)
+        if result is None:
+            raise _missing(key)
+        return result
 
     @app_config_fragment_admin_repository_resilience.apply()
     async def purge(self, key: AppConfigFragmentKey) -> bool:
-        return await self._db_source.purge(key)
+        """Delete a fragment by natural key. Resolves the natural key,
+        builds a ``Purger``, and delegates to the DB source. Returns
+        ``True`` only when a row was actually removed."""
+        pk_value = await self._db_source.resolve_pk_by_key(key)
+        if pk_value is None:
+            return False
+        purger: Purger[AppConfigFragmentRow] = Purger(
+            row_class=AppConfigFragmentRow,
+            pk_value=pk_value,
+        )
+        return await self._db_source.purge(purger)
 
     # ── Cross-scope reads ────────────────────────────────────────
 
