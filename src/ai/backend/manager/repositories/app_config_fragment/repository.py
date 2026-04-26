@@ -116,7 +116,7 @@ class AppConfigFragmentRepository:
 
         merged = await self._db_source.get_user_app_config(user_id, config_name)
         if self._cache_source is not None:
-            domain_name = await self._db_source.user_domain_name(user_id)
+            domain_name = await self._db_source.get_user_domain_name(user_id)
             await self._cache_source.set_merged_config(merged, domain_name=domain_name)
         return merged
 
