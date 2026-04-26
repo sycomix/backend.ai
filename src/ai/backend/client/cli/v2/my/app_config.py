@@ -1,4 +1,4 @@
-"""Self-service CLI commands for the merged AppConfig view (BEP-1052 §5)."""
+"""Self-service CLI commands for the merged AppConfig view."""
 
 from __future__ import annotations
 
@@ -88,8 +88,8 @@ def _load_items(items_arg: str) -> list[dict[str, Any]]:
 def bulk_create(items: str) -> None:
     """Bulk-create USER-scope fragments; returns recomputed merged views."""
     from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
-        BulkCreateMyAppConfigFragmentsInput,
         MyAppConfigFragmentItemInput,
+        MyBulkCreateAppConfigFragmentsInput,
     )
 
     parsed = [MyAppConfigFragmentItemInput.model_validate(item) for item in _load_items(items)]
@@ -98,7 +98,7 @@ def bulk_create(items: str) -> None:
         registry = await create_v2_registry(load_v2_config())
         try:
             result = await registry.app_config.my_bulk_create(
-                BulkCreateMyAppConfigFragmentsInput(items=parsed),
+                MyBulkCreateAppConfigFragmentsInput(items=parsed),
             )
             print_result(result)
         finally:
@@ -116,8 +116,8 @@ def bulk_create(items: str) -> None:
 def bulk_update(items: str) -> None:
     """Bulk-update USER-scope fragments; returns recomputed merged views."""
     from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
-        BulkUpdateMyAppConfigFragmentsInput,
         MyAppConfigFragmentItemInput,
+        MyBulkUpdateAppConfigFragmentsInput,
     )
 
     parsed = [MyAppConfigFragmentItemInput.model_validate(item) for item in _load_items(items)]
@@ -126,7 +126,7 @@ def bulk_update(items: str) -> None:
         registry = await create_v2_registry(load_v2_config())
         try:
             result = await registry.app_config.my_bulk_update(
-                BulkUpdateMyAppConfigFragmentsInput(items=parsed),
+                MyBulkUpdateAppConfigFragmentsInput(items=parsed),
             )
             print_result(result)
         finally:

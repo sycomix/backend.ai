@@ -1,4 +1,4 @@
-"""V2 SDK client for the app-config policy domain (BEP-1052 §1).
+"""V2 SDK client for the app-config policy domain.
 
 Policies are an admin-only surface — end users observe their effects
 through the merged ``AppConfig`` view (``V2AppConfigClient``), not by
@@ -25,7 +25,7 @@ _PATH = "/v2/app-config-policies"
 class V2AppConfigPolicyClient(BaseDomainClient):
     """SDK client for AppConfigPolicy admin operations.
 
-    Writes are bulk-only (BEP-1052 §3); single-item create / update /
+    Writes are bulk-only; single-item create / update /
     purge are intentionally absent.
     """
 

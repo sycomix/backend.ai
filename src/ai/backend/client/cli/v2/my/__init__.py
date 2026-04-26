@@ -90,4 +90,4 @@ def storage_host() -> None:
     name="app-config",
 )
 def app_config() -> None:
-    """My merged AppConfig commands (BEP-1052 §5)."""
+    """My merged AppConfig commands."""

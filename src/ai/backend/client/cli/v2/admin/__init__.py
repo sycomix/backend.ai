@@ -211,7 +211,7 @@ def invitation() -> None:
     name="app-config",
 )
 def app_config() -> None:
-    """Admin merged AppConfig commands (BEP-1052 §5)."""
+    """Admin merged AppConfig commands."""
 
 
 @admin.group(

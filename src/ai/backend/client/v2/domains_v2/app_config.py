@@ -1,4 +1,4 @@
-"""V2 SDK client for the merged AppConfig view (BEP-1052 §5).
+"""V2 SDK client for the merged AppConfig view.
 
 Replaces the legacy upsert-style domain/user app-config SDK; the new
 surface is bulk-only writes against `USER`-scope fragments plus
@@ -15,14 +15,14 @@ from ai.backend.common.dto.manager.v2.app_config.request import (
     SearchMyAppConfigsInput,
 )
 from ai.backend.common.dto.manager.v2.app_config.response import (
-    BulkCreateMyAppConfigFragmentsPayload,
-    BulkUpdateMyAppConfigFragmentsPayload,
     GetUserAppConfigPayload,
+    MyBulkCreateAppConfigFragmentsPayload,
+    MyBulkUpdateAppConfigFragmentsPayload,
     SearchAppConfigsPayload,
 )
 from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
-    BulkCreateMyAppConfigFragmentsInput,
-    BulkUpdateMyAppConfigFragmentsInput,
+    MyBulkCreateAppConfigFragmentsInput,
+    MyBulkUpdateAppConfigFragmentsInput,
 )
 
 _PATH = "/v2/app-configs"
@@ -67,23 +67,23 @@ class V2AppConfigClient(BaseDomainClient):
         )
 
     async def my_bulk_create(
-        self, request: BulkCreateMyAppConfigFragmentsInput
-    ) -> BulkCreateMyAppConfigFragmentsPayload:
+        self, request: MyBulkCreateAppConfigFragmentsInput
+    ) -> MyBulkCreateAppConfigFragmentsPayload:
         """Bulk-create USER-scope fragments; returns recomputed merged views."""
         return await self._client.typed_request(
             "POST",
             f"{_FRAGMENT_PATH}/my/bulk-create",
             request=request,
-            response_model=BulkCreateMyAppConfigFragmentsPayload,
+            response_model=MyBulkCreateAppConfigFragmentsPayload,
         )
 
     async def my_bulk_update(
-        self, request: BulkUpdateMyAppConfigFragmentsInput
-    ) -> BulkUpdateMyAppConfigFragmentsPayload:
+        self, request: MyBulkUpdateAppConfigFragmentsInput
+    ) -> MyBulkUpdateAppConfigFragmentsPayload:
         """Bulk-update USER-scope fragments; returns recomputed merged views."""
         return await self._client.typed_request(
             "POST",
             f"{_FRAGMENT_PATH}/my/bulk-update",
             request=request,
-            response_model=BulkUpdateMyAppConfigFragmentsPayload,
+            response_model=MyBulkUpdateAppConfigFragmentsPayload,
         )

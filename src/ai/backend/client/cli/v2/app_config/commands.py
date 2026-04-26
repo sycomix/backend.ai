@@ -1,4 +1,4 @@
-"""CLI commands for the merged AppConfig view (BEP-1052 §5).
+"""CLI commands for the merged AppConfig view.
 
 Public entrypoint exposes only the read paths that any authenticated
 user can hit. Self-service writes live under `bai my app-config`;

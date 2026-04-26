@@ -1,4 +1,4 @@
-"""V2 SDK client for the app-config fragment domain (BEP-1052 §2).
+"""V2 SDK client for the app-config fragment domain.
 
 Fragments are an admin-only surface — end users interact with the merged
 ``AppConfig`` view (``V2AppConfigClient``) instead. Self-service
@@ -28,7 +28,7 @@ _PATH = "/v2/app-config-fragments"
 class V2AppConfigFragmentClient(BaseDomainClient):
     """SDK client for AppConfigFragment admin operations.
 
-    Writes are bulk-only (BEP-1052 §3).
+    Writes are bulk-only.
     """
 
     async def admin_search(

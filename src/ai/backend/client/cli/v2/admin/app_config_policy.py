@@ -1,4 +1,4 @@
-"""Admin CLI commands for AppConfigPolicy (bulk-only writes, BEP-1052 §3)."""
+"""Admin CLI commands for AppConfigPolicy (bulk-only writes)."""
 
 from __future__ import annotations
 
