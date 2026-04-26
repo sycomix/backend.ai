@@ -83,7 +83,7 @@ def _load_items(items_arg: str) -> list[dict[str, Any]]:
 @click.option(
     "--items",
     required=True,
-    help="JSON list of `{name, extra_config}` items, or `@path/to/items.json`.",
+    help="JSON list of `{name, config}` items, or `@path/to/items.json`.",
 )
 def bulk_create(items: str) -> None:
     """Bulk-create USER-scope fragments; returns recomputed merged views."""
@@ -111,7 +111,7 @@ def bulk_create(items: str) -> None:
 @click.option(
     "--items",
     required=True,
-    help="Same shape as `bulk-create`; replaces `extra_config` wholesale.",
+    help="Same shape as `bulk-create`; replaces `config` wholesale.",
 )
 def bulk_update(items: str) -> None:
     """Bulk-update USER-scope fragments; returns recomputed merged views."""

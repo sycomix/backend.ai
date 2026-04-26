@@ -99,7 +99,7 @@ def search(
     "--items",
     required=True,
     help=(
-        "JSON list of `{key: {scope_type, scope_id, name}, extra_config}` items, "
+        "JSON list of `{key: {scope_type, scope_id, name}, config}` items, "
         "or `@path/to/items.json`."
     ),
 )
@@ -129,7 +129,7 @@ def bulk_create(items: str) -> None:
 @click.option(
     "--items",
     required=True,
-    help="Same shape as `bulk-create`; replaces `extra_config` wholesale.",
+    help="Same shape as `bulk-create`; replaces `config` wholesale.",
 )
 def bulk_update(items: str) -> None:
     """Bulk-update fragments (partial-success semantics)."""
