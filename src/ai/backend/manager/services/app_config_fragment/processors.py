@@ -21,17 +21,17 @@ from ai.backend.manager.services.app_config_fragment.actions.admin_search import
     AdminSearchAppConfigFragmentsAction,
     AdminSearchAppConfigFragmentsActionResult,
 )
-from ai.backend.manager.services.app_config_fragment.actions.bulk_create_my import (
-    BulkCreateMyAppConfigFragmentsAction,
-    BulkCreateMyAppConfigFragmentsActionResult,
-)
-from ai.backend.manager.services.app_config_fragment.actions.bulk_update_my import (
-    BulkUpdateMyAppConfigFragmentsAction,
-    BulkUpdateMyAppConfigFragmentsActionResult,
-)
 from ai.backend.manager.services.app_config_fragment.actions.get import (
     GetAppConfigFragmentAction,
     GetAppConfigFragmentActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.my_bulk_create import (
+    MyBulkCreateAppConfigFragmentsAction,
+    MyBulkCreateAppConfigFragmentsActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.my_bulk_update import (
+    MyBulkUpdateAppConfigFragmentsAction,
+    MyBulkUpdateAppConfigFragmentsActionResult,
 )
 from ai.backend.manager.services.app_config_fragment.actions.search import (
     SearchAppConfigFragmentsAction,
@@ -46,10 +46,10 @@ class AppConfigFragmentProcessors(AbstractProcessorPackage):
     admin_search: ActionProcessor[
         AdminSearchAppConfigFragmentsAction, AdminSearchAppConfigFragmentsActionResult
     ]
-    # Bulk mutations (BEP-1052 §3) — wrapped by BulkActionProcessor so
-    # validators (RBAC, etc.) can filter entity_ids per-item before the
-    # service runs. No bulk validators are wired today; the processor
-    # simply forwards to the service.
+    # Bulk mutations — wrapped by BulkActionProcessor so validators
+    # (RBAC, etc.) can filter entity_ids per-item before the service
+    # runs. No bulk validators are wired today; the processor simply
+    # forwards to the service.
     admin_bulk_create: BulkActionProcessor[
         AdminBulkCreateAppConfigFragmentsAction, AdminBulkCreateAppConfigFragmentsActionResult
     ]
@@ -59,11 +59,11 @@ class AppConfigFragmentProcessors(AbstractProcessorPackage):
     admin_bulk_purge: BulkActionProcessor[
         AdminBulkPurgeAppConfigFragmentsAction, AdminBulkPurgeAppConfigFragmentsActionResult
     ]
-    bulk_create_my: BulkActionProcessor[
-        BulkCreateMyAppConfigFragmentsAction, BulkCreateMyAppConfigFragmentsActionResult
+    my_bulk_create: BulkActionProcessor[
+        MyBulkCreateAppConfigFragmentsAction, MyBulkCreateAppConfigFragmentsActionResult
     ]
-    bulk_update_my: BulkActionProcessor[
-        BulkUpdateMyAppConfigFragmentsAction, BulkUpdateMyAppConfigFragmentsActionResult
+    my_bulk_update: BulkActionProcessor[
+        MyBulkUpdateAppConfigFragmentsAction, MyBulkUpdateAppConfigFragmentsActionResult
     ]
 
     def __init__(
@@ -78,8 +78,8 @@ class AppConfigFragmentProcessors(AbstractProcessorPackage):
         self.admin_bulk_create = BulkActionProcessor(service.admin_bulk_create, action_monitors)
         self.admin_bulk_update = BulkActionProcessor(service.admin_bulk_update, action_monitors)
         self.admin_bulk_purge = BulkActionProcessor(service.admin_bulk_purge, action_monitors)
-        self.bulk_create_my = BulkActionProcessor(service.bulk_create_my, action_monitors)
-        self.bulk_update_my = BulkActionProcessor(service.bulk_update_my, action_monitors)
+        self.my_bulk_create = BulkActionProcessor(service.my_bulk_create, action_monitors)
+        self.my_bulk_update = BulkActionProcessor(service.my_bulk_update, action_monitors)
 
     @override
     def supported_actions(self) -> list[ActionSpec]:
@@ -90,6 +90,6 @@ class AppConfigFragmentProcessors(AbstractProcessorPackage):
             AdminBulkCreateAppConfigFragmentsAction.spec(),
             AdminBulkUpdateAppConfigFragmentsAction.spec(),
             AdminBulkPurgeAppConfigFragmentsAction.spec(),
-            BulkCreateMyAppConfigFragmentsAction.spec(),
-            BulkUpdateMyAppConfigFragmentsAction.spec(),
+            MyBulkCreateAppConfigFragmentsAction.spec(),
+            MyBulkUpdateAppConfigFragmentsAction.spec(),
         ]

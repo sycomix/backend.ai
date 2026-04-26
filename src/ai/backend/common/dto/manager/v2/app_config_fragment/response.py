@@ -55,7 +55,7 @@ class SearchAppConfigFragmentsPayload(BaseResponseModel):
     has_previous_page: bool = Field(default=False, description="Whether there is a previous page.")
 
 
-# ── Bulk mutation payloads (BEP-1052 §3, bulk-only writes) ───────
+# ── Bulk mutation payloads (bulk-only writes) ────────────────────
 
 
 class AppConfigFragmentBulkError(BaseResponseModel):
@@ -99,7 +99,7 @@ class AdminBulkPurgeAppConfigFragmentsPayload(BaseResponseModel):
     failed: list[AppConfigFragmentBulkError] = Field(description="Per-item failures.")
 
 
-# `BulkCreateMyAppConfigFragmentsPayload` / `BulkUpdateMyAppConfigFragmentsPayload`
+# `MyBulkCreateAppConfigFragmentsPayload` / `MyBulkUpdateAppConfigFragmentsPayload`
 # return recomputed merged `AppConfig` views — they live in
 # `common/dto/manager/v2/app_config/response.py` (added with the
 # merged-view DTO in the GQL/REST layer) to keep `AppConfigNode` as the

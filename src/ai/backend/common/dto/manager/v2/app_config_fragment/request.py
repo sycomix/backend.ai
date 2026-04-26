@@ -21,8 +21,8 @@ __all__ = (
     "AppConfigFragmentFilter",
     "AppConfigFragmentKeyInput",
     "AppConfigFragmentOrder",
-    "BulkCreateMyAppConfigFragmentsInput",
-    "BulkUpdateMyAppConfigFragmentsInput",
+    "MyBulkCreateAppConfigFragmentsInput",
+    "MyBulkUpdateAppConfigFragmentsInput",
     "MyAppConfigFragmentItemInput",
     "SearchAppConfigFragmentsInput",
 )
@@ -56,7 +56,7 @@ class AppConfigFragmentOrder(BaseRequestModel):
     direction: OrderDirection = Field(default=OrderDirection.ASC, description="Order direction.")
 
 
-# ── Bulk mutation inputs (BEP-1052 §3) ───────────────────────────
+# ── Bulk mutation inputs ─────────────────────────────────────────
 
 
 class AdminAppConfigFragmentItemInput(BaseRequestModel):
@@ -93,11 +93,11 @@ class MyAppConfigFragmentItemInput(BaseRequestModel):
     )
 
 
-class BulkCreateMyAppConfigFragmentsInput(BaseRequestModel):
+class MyBulkCreateAppConfigFragmentsInput(BaseRequestModel):
     items: list[MyAppConfigFragmentItemInput] = Field(description="USER-scope rows to create.")
 
 
-class BulkUpdateMyAppConfigFragmentsInput(BaseRequestModel):
+class MyBulkUpdateAppConfigFragmentsInput(BaseRequestModel):
     items: list[MyAppConfigFragmentItemInput] = Field(description="USER-scope rows to update.")
 
 

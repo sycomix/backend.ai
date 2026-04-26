@@ -32,17 +32,17 @@ from ai.backend.manager.services.app_config_fragment.actions.admin_search import
     AdminSearchAppConfigFragmentsAction,
     AdminSearchAppConfigFragmentsActionResult,
 )
-from ai.backend.manager.services.app_config_fragment.actions.bulk_create_my import (
-    BulkCreateMyAppConfigFragmentsAction,
-    BulkCreateMyAppConfigFragmentsActionResult,
-)
-from ai.backend.manager.services.app_config_fragment.actions.bulk_update_my import (
-    BulkUpdateMyAppConfigFragmentsAction,
-    BulkUpdateMyAppConfigFragmentsActionResult,
-)
 from ai.backend.manager.services.app_config_fragment.actions.get import (
     GetAppConfigFragmentAction,
     GetAppConfigFragmentActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.my_bulk_create import (
+    MyBulkCreateAppConfigFragmentsAction,
+    MyBulkCreateAppConfigFragmentsActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.my_bulk_update import (
+    MyBulkUpdateAppConfigFragmentsAction,
+    MyBulkUpdateAppConfigFragmentsActionResult,
 )
 from ai.backend.manager.services.app_config_fragment.actions.search import (
     SearchAppConfigFragmentsAction,
@@ -90,7 +90,7 @@ class AppConfigFragmentService:
             has_previous_page=result.has_previous_page,
         )
 
-    # ── Bulk mutations (BEP-1052 §3, per-item transaction) ────────
+    # ── Bulk mutations (per-item transaction) ─────────────────────
 
     async def admin_bulk_create(
         self, action: AdminBulkCreateAppConfigFragmentsAction
@@ -104,7 +104,7 @@ class AppConfigFragmentService:
                 fragment = await self._admin_repository.create(item.key, item.extra_config)
                 created.append(fragment)
             except Exception as e:
-                log.debug("admin_bulk_create item {} failed: {}", index, e)
+                log.warning("admin_bulk_create item {} failed: {}", index, e)
                 failed.append(
                     AppConfigFragmentBulkItemError(
                         index=index,
@@ -128,7 +128,7 @@ class AppConfigFragmentService:
                 fragment = await self._admin_repository.update(item.key, item.extra_config)
                 updated.append(fragment)
             except Exception as e:
-                log.debug("admin_bulk_update item {} failed: {}", index, e)
+                log.warning("admin_bulk_update item {} failed: {}", index, e)
                 failed.append(
                     AppConfigFragmentBulkItemError(
                         index=index,
@@ -143,7 +143,7 @@ class AppConfigFragmentService:
     async def admin_bulk_purge(
         self, action: AdminBulkPurgeAppConfigFragmentsAction
     ) -> AdminBulkPurgeAppConfigFragmentsActionResult:
-        """Cleanup-only deletion (BEP-1052 §1); absent keys are no-oped."""
+        """Cleanup-only deletion; absent keys are no-oped."""
         purged: list[AppConfigFragmentKey] = []
         failed: list[AppConfigFragmentBulkItemError] = []
         for index, key in enumerate(action.keys):
@@ -153,7 +153,7 @@ class AppConfigFragmentService:
                     purged.append(key)
                 # Absent keys are intentionally no-oped (no failure entry).
             except Exception as e:
-                log.debug("admin_bulk_purge item {} failed: {}", index, e)
+                log.warning("admin_bulk_purge item {} failed: {}", index, e)
                 failed.append(
                     AppConfigFragmentBulkItemError(
                         index=index,
@@ -165,9 +165,9 @@ class AppConfigFragmentService:
                 )
         return AdminBulkPurgeAppConfigFragmentsActionResult(purged=purged, failed=failed)
 
-    async def bulk_create_my(
-        self, action: BulkCreateMyAppConfigFragmentsAction
-    ) -> BulkCreateMyAppConfigFragmentsActionResult:
+    async def my_bulk_create(
+        self, action: MyBulkCreateAppConfigFragmentsAction
+    ) -> MyBulkCreateAppConfigFragmentsActionResult:
         """Self-service bulk create on the caller's `USER` row; each
         success recomputes the merged `AppConfig` view.
         """
@@ -189,7 +189,7 @@ class AppConfigFragmentService:
                 merged = await self._repository.app_config(user_id, item.name)
                 created.append(merged)
             except Exception as e:
-                log.debug("bulk_create_my item {} failed: {}", index, e)
+                log.warning("my_bulk_create item {} failed: {}", index, e)
                 failed.append(
                     AppConfigFragmentBulkItemError(
                         index=index,
@@ -199,11 +199,11 @@ class AppConfigFragmentService:
                         message=str(e),
                     )
                 )
-        return BulkCreateMyAppConfigFragmentsActionResult(created=created, failed=failed)
+        return MyBulkCreateAppConfigFragmentsActionResult(created=created, failed=failed)
 
-    async def bulk_update_my(
-        self, action: BulkUpdateMyAppConfigFragmentsAction
-    ) -> BulkUpdateMyAppConfigFragmentsActionResult:
+    async def my_bulk_update(
+        self, action: MyBulkUpdateAppConfigFragmentsAction
+    ) -> MyBulkUpdateAppConfigFragmentsActionResult:
         """Self-service bulk update on the caller's `USER` row."""
         me = current_user()
         if me is None:
@@ -223,7 +223,7 @@ class AppConfigFragmentService:
                 merged = await self._repository.app_config(user_id, item.name)
                 updated.append(merged)
             except Exception as e:
-                log.debug("bulk_update_my item {} failed: {}", index, e)
+                log.warning("my_bulk_update item {} failed: {}", index, e)
                 failed.append(
                     AppConfigFragmentBulkItemError(
                         index=index,
@@ -233,4 +233,4 @@ class AppConfigFragmentService:
                         message=str(e),
                     )
                 )
-        return BulkUpdateMyAppConfigFragmentsActionResult(updated=updated, failed=failed)
+        return MyBulkUpdateAppConfigFragmentsActionResult(updated=updated, failed=failed)

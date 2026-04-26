@@ -22,9 +22,12 @@ from ai.backend.common.dto.manager.v2.app_config_fragment.response import (
     SearchAppConfigFragmentsPayload,
 )
 from ai.backend.common.dto.manager.v2.app_config_fragment.types import (
+    AppConfigFragmentOrderField,
+    OrderDirection,
+)
+from ai.backend.common.dto.manager.v2.app_config_fragment.types import (
     AppConfigScopeType as DTOAppConfigScopeType,
 )
-from ai.backend.common.dto.manager.v2.app_config_fragment.types import OrderDirection
 from ai.backend.manager.api.adapter_options.pagination.pagination import PaginationSpec
 from ai.backend.manager.data.app_config_fragment.bulk_types import (
     AppConfigFragmentBulkItem,
@@ -63,11 +66,11 @@ from .base import BaseAdapter
 
 
 class AppConfigFragmentAdapter(BaseAdapter):
-    """Adapter for AppConfigFragment domain operations (BEP-1052 §2).
+    """Adapter for AppConfigFragment domain operations.
 
-    Writes are bulk-only (BEP-1052 §3); single-item create / update /
-    purge entry points are intentionally absent. Self-service my_bulk
-    methods are added with the merged-view DTOs in BA-5829.
+    Writes are bulk-only; single-item create / update / purge entry
+    points are intentionally absent. Self-service my_bulk methods are
+    added with the merged-view DTOs in BA-5829.
     """
 
     async def get(self, key_input: AppConfigFragmentKeyInput) -> GetAppConfigFragmentPayload:
@@ -186,16 +189,16 @@ class AppConfigFragmentAdapter(BaseAdapter):
         result: list[QueryOrder] = []
         for order in orders:
             ascending = order.direction == OrderDirection.ASC
-            match order.field.value:
-                case "scope_type":
+            match order.field:
+                case AppConfigFragmentOrderField.SCOPE_TYPE:
                     result.append(AppConfigFragmentOrders.scope_type(ascending))
-                case "scope_id":
+                case AppConfigFragmentOrderField.SCOPE_ID:
                     result.append(AppConfigFragmentOrders.scope_id(ascending))
-                case "name":
+                case AppConfigFragmentOrderField.NAME:
                     result.append(AppConfigFragmentOrders.name(ascending))
-                case "created_at":
+                case AppConfigFragmentOrderField.CREATED_AT:
                     result.append(AppConfigFragmentOrders.created_at(ascending))
-                case "updated_at":
+                case AppConfigFragmentOrderField.UPDATED_AT:
                     result.append(AppConfigFragmentOrders.updated_at(ascending))
         return result
 
@@ -219,7 +222,7 @@ class AppConfigFragmentAdapter(BaseAdapter):
             updated_at=data.updated_at,
         )
 
-    # ── Bulk mutations (BEP-1052 §3) ───────────────────────────────
+    # ── Bulk mutations ─────────────────────────────────────────────
     #
     # Each bulk processor returns a `BulkProcessResult[T]` whose
     # `.result` field is the underlying `*ActionResult` produced by the

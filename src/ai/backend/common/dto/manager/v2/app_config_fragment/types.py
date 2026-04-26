@@ -16,7 +16,7 @@ __all__ = (
 
 
 class AppConfigScopeType(StrEnum):
-    """Scope types for app-config fragments (BEP-1052 §1)."""
+    """Scope types for app-config fragments."""
 
     PUBLIC = "public"
     DOMAIN = "domain"

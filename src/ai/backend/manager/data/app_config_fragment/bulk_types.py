@@ -1,4 +1,4 @@
-"""Bulk-mutation service-layer dataclasses for app_config_fragments (BEP-1052 §3)."""
+"""Bulk-mutation service-layer dataclasses for app_config_fragments."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ class MyAppConfigFragmentBulkItem:
 
 @dataclass(frozen=True)
 class AppConfigFragmentBulkItemError:
-    """Per-item failure carried through bulk action results (BEP-1052 §3).
+    """Per-item failure carried through bulk action results.
 
     `scope_type` / `scope_id` / `name` identify which input row failed;
     `index` preserves the caller's original list position.

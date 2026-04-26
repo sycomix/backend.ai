@@ -6,9 +6,9 @@ from .request import (
     AppConfigFragmentFilter,
     AppConfigFragmentKeyInput,
     AppConfigFragmentOrder,
-    BulkCreateMyAppConfigFragmentsInput,
-    BulkUpdateMyAppConfigFragmentsInput,
     MyAppConfigFragmentItemInput,
+    MyBulkCreateAppConfigFragmentsInput,
+    MyBulkUpdateAppConfigFragmentsInput,
     SearchAppConfigFragmentsInput,
 )
 from .response import (
@@ -42,8 +42,8 @@ __all__ = (
     "AppConfigFragmentOrder",
     "AppConfigFragmentOrderField",
     "AppConfigScopeType",
-    "BulkCreateMyAppConfigFragmentsInput",
-    "BulkUpdateMyAppConfigFragmentsInput",
+    "MyBulkCreateAppConfigFragmentsInput",
+    "MyBulkUpdateAppConfigFragmentsInput",
     "GetAppConfigFragmentPayload",
     "MyAppConfigFragmentItemInput",
     "OrderDirection",
