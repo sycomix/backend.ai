@@ -202,27 +202,12 @@ input AdminAppConfigFragmentItemInput
   config: JSON!
 }
 
-"""
-Added in UNRELEASED. Per-item input for admin bulk create — `config_name` + initial `scope_sources`.
-"""
-input AdminAppConfigPolicyCreateItemInput
+"""Added in UNRELEASED. Per-item input for admin bulk create / update."""
+input AdminAppConfigPolicyItemInput
   @join__type(graph: STRAWBERRY)
 {
   """Unique, immutable policy name."""
   configName: String!
-
-  """Ordered scope chain."""
-  scopeSources: [String!]!
-}
-
-"""
-Added in UNRELEASED. Per-item input for admin bulk update — target row id + new `scope_sources`.
-"""
-input AdminAppConfigPolicyUpdateItemInput
-  @join__type(graph: STRAWBERRY)
-{
-  """Policy row id."""
-  id: UUID!
 
   """Ordered scope chain."""
   scopeSources: [String!]!
@@ -263,7 +248,7 @@ input AdminBulkCreateAppConfigPolicyInput
   @join__type(graph: STRAWBERRY)
 {
   """Policies to create."""
-  items: [AdminAppConfigPolicyCreateItemInput!]!
+  items: [AdminAppConfigPolicyItemInput!]!
 }
 
 """
@@ -291,21 +276,21 @@ type AdminBulkPurgeAppConfigFragmentsPayload
 type AdminBulkPurgeAppConfigPoliciesPayload
   @join__type(graph: STRAWBERRY)
 {
-  """Ids of policies actually removed (absent ids no-oped)."""
-  purgedIds: [UUID!]!
+  """`config_name`s of policies actually removed (absent names no-oped)."""
+  purgedConfigNames: [String!]!
 
   """Per-item failures."""
   failed: [AppConfigPolicyBulkError!]!
 }
 
 """
-Added in UNRELEASED. Admin bulk purge input for app-config policies (keyed on row id).
+Added in UNRELEASED. Admin bulk purge input for app-config policies (keyed on `config_name`).
 """
 input AdminBulkPurgeAppConfigPolicyInput
   @join__type(graph: STRAWBERRY)
 {
-  """Policy row ids to purge."""
-  ids: [UUID!]!
+  """`config_name`s to purge."""
+  configNames: [String!]!
 }
 
 """Added in UNRELEASED. Admin bulk update input."""
@@ -343,7 +328,7 @@ input AdminBulkUpdateAppConfigPolicyInput
   @join__type(graph: STRAWBERRY)
 {
   """Policies to update."""
-  items: [AdminAppConfigPolicyUpdateItemInput!]!
+  items: [AdminAppConfigPolicyItemInput!]!
 }
 
 """Added in 26.4.2. Admin input for creating a keypair for a user."""
@@ -1078,12 +1063,6 @@ input AppConfigFilter
 
   """Filter by target user id (admin cross-user search only)."""
   userId: UUIDFilter = null
-
-  """Filter by the oldest contributing fragment's creation timestamp."""
-  createdAt: DateTimeFilter = null
-
-  """Filter by the latest contributing fragment's update timestamp."""
-  updatedAt: DateTimeFilter = null
 }
 
 """Added in UNRELEASED. Raw per-scope app-config fragment."""
@@ -1182,7 +1161,6 @@ enum AppConfigFragmentOrderField
   SCOPE_ID @join__enumValue(graph: STRAWBERRY)
   NAME @join__enumValue(graph: STRAWBERRY)
   CREATED_AT @join__enumValue(graph: STRAWBERRY)
-  UPDATED_AT @join__enumValue(graph: STRAWBERRY)
 }
 
 """Added in UNRELEASED. Specifies ordering for merged AppConfig results."""
@@ -1202,8 +1180,6 @@ enum AppConfigOrderField
 {
   USER_ID @join__enumValue(graph: STRAWBERRY)
   NAME @join__enumValue(graph: STRAWBERRY)
-  CREATED_AT @join__enumValue(graph: STRAWBERRY)
-  UPDATED_AT @join__enumValue(graph: STRAWBERRY)
 }
 
 """Added in UNRELEASED. Scoped app-config policy."""
@@ -1233,6 +1209,9 @@ type AppConfigPolicyBulkError
 {
   """Original position in the input list."""
   index: Int!
+
+  """`config_name` of the failed row."""
+  configName: String!
 
   """Reason for the failure."""
   message: String!
@@ -2285,6 +2264,29 @@ type BulkAssignRolePayload
   failed: [BulkAssignRoleError!]!
 }
 
+"""
+Added in UNRELEASED. Self-service bulk create — scope is `USER` / `current_user`.
+"""
+input MyBulkCreateAppConfigFragmentInput
+  @join__type(graph: STRAWBERRY)
+{
+  """USER-scope rows to create."""
+  items: [MyAppConfigFragmentItemInput!]!
+}
+
+"""
+Added in UNRELEASED. Payload for `myBulkCreateAppConfigFragments` (recomputed views).
+"""
+type MyBulkCreateAppConfigFragmentsPayload
+  @join__type(graph: STRAWBERRY)
+{
+  """Recomputed merged AppConfig views for each created USER fragment."""
+  created: [AppConfig!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
+}
+
 """Added in 26.2.0. Payload for bulk user creation mutation."""
 type BulkCreateUsersV2Payload
   @join__type(graph: STRAWBERRY)
@@ -2435,6 +2437,29 @@ type BulkRevokeRolePayload
 
   """Users that failed to be revoked"""
   failed: [BulkRevokeRoleError!]!
+}
+
+"""
+Added in UNRELEASED. Self-service bulk update — scope is `USER` / `current_user`.
+"""
+input MyBulkUpdateAppConfigFragmentInput
+  @join__type(graph: STRAWBERRY)
+{
+  """USER-scope rows to update."""
+  items: [MyAppConfigFragmentItemInput!]!
+}
+
+"""
+Added in UNRELEASED. Payload for `myBulkUpdateAppConfigFragments` (recomputed views).
+"""
+type MyBulkUpdateAppConfigFragmentsPayload
+  @join__type(graph: STRAWBERRY)
+{
+  """Recomputed merged AppConfig views for each updated USER fragment."""
+  updated: [AppConfig!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
 }
 
 """Added in 26.3.0. Payload for bulk user update mutation."""
@@ -11287,7 +11312,7 @@ type Mutation
   adminBulkUpdateAppConfigPolicies(input: AdminBulkUpdateAppConfigPolicyInput!): AdminBulkUpdateAppConfigPoliciesPayload! @join__field(graph: STRAWBERRY)
 
   """
-  Added in UNRELEASED. Hard-delete policies by row id; rows still referenced by fragments surface in `failed`. Admin only.
+  Added in UNRELEASED. Rejects items whose `config_name` still has referencing fragment rows. Admin only.
   """
   adminBulkPurgeAppConfigPolicies(input: AdminBulkPurgeAppConfigPolicyInput!): AdminBulkPurgeAppConfigPoliciesPayload! @join__field(graph: STRAWBERRY)
 
@@ -11544,52 +11569,6 @@ input MyAppConfigFragmentItemInput
 
   """Raw configuration payload."""
   config: JSON!
-}
-
-"""
-Added in UNRELEASED. Self-service bulk create — scope is `USER` / `current_user`.
-"""
-input MyBulkCreateAppConfigFragmentInput
-  @join__type(graph: STRAWBERRY)
-{
-  """USER-scope rows to create."""
-  items: [MyAppConfigFragmentItemInput!]!
-}
-
-"""
-Added in UNRELEASED. Payload for `bulkCreateMyAppConfigFragments` (recomputed views).
-"""
-type MyBulkCreateAppConfigFragmentsPayload
-  @join__type(graph: STRAWBERRY)
-{
-  """Recomputed merged AppConfig views for each created USER fragment."""
-  created: [AppConfig!]!
-
-  """Per-item failures."""
-  failed: [AppConfigFragmentBulkError!]!
-}
-
-"""
-Added in UNRELEASED. Self-service bulk update — scope is `USER` / `current_user`.
-"""
-input MyBulkUpdateAppConfigFragmentInput
-  @join__type(graph: STRAWBERRY)
-{
-  """USER-scope rows to update."""
-  items: [MyAppConfigFragmentItemInput!]!
-}
-
-"""
-Added in UNRELEASED. Payload for `bulkUpdateMyAppConfigFragments` (recomputed views).
-"""
-type MyBulkUpdateAppConfigFragmentsPayload
-  @join__type(graph: STRAWBERRY)
-{
-  """Recomputed merged AppConfig views for each updated USER fragment."""
-  updated: [AppConfig!]!
-
-  """Per-item failures."""
-  failed: [AppConfigFragmentBulkError!]!
 }
 
 """
@@ -13905,9 +13884,9 @@ type Query
   adminImageAliases(filter: ImageV2AliasFilter = null, orderBy: [ImageV2AliasOrderByGQL!] = null, before: String = null, after: String = null, first: Int = null, last: Int = null, limit: Int = null, offset: Int = null): ImageV2AliasConnection @join__field(graph: STRAWBERRY)
 
   """
-  Added in UNRELEASED. Get a single app-config policy by row id. Available to any authenticated user.
+  Added in UNRELEASED. Get a single app-config policy by `config_name`. Available to any authenticated user.
   """
-  appConfigPolicy(id: UUID!): AppConfigPolicy @join__field(graph: STRAWBERRY)
+  appConfigPolicy(configName: String!): AppConfigPolicy @join__field(graph: STRAWBERRY)
 
   """
   Added in UNRELEASED. List app-config policies with filtering and pagination. Available to any authenticated user.

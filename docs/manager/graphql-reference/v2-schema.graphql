@@ -154,23 +154,10 @@ input AdminAppConfigFragmentItemInput {
   config: JSON!
 }
 
-"""
-Added in UNRELEASED. Per-item input for admin bulk create — `config_name` + initial `scope_sources`.
-"""
-input AdminAppConfigPolicyCreateItemInput {
+"""Added in UNRELEASED. Per-item input for admin bulk create / update."""
+input AdminAppConfigPolicyItemInput {
   """Unique, immutable policy name."""
   configName: String!
-
-  """Ordered scope chain."""
-  scopeSources: [String!]!
-}
-
-"""
-Added in UNRELEASED. Per-item input for admin bulk update — target row id + new `scope_sources`.
-"""
-input AdminAppConfigPolicyUpdateItemInput {
-  """Policy row id."""
-  id: UUID!
 
   """Ordered scope chain."""
   scopeSources: [String!]!
@@ -203,7 +190,7 @@ type AdminBulkCreateAppConfigPoliciesPayload {
 """Added in UNRELEASED. Admin bulk create input for app-config policies."""
 input AdminBulkCreateAppConfigPolicyInput {
   """Policies to create."""
-  items: [AdminAppConfigPolicyCreateItemInput!]!
+  items: [AdminAppConfigPolicyItemInput!]!
 }
 
 """
@@ -225,19 +212,19 @@ type AdminBulkPurgeAppConfigFragmentsPayload {
 
 """Added in UNRELEASED. Payload for `adminBulkPurgeAppConfigPolicies`."""
 type AdminBulkPurgeAppConfigPoliciesPayload {
-  """Ids of policies actually removed (absent ids no-oped)."""
-  purgedIds: [UUID!]!
+  """`config_name`s of policies actually removed (absent names no-oped)."""
+  purgedConfigNames: [String!]!
 
   """Per-item failures."""
   failed: [AppConfigPolicyBulkError!]!
 }
 
 """
-Added in UNRELEASED. Admin bulk purge input for app-config policies (keyed on row id).
+Added in UNRELEASED. Admin bulk purge input for app-config policies (keyed on `config_name`).
 """
 input AdminBulkPurgeAppConfigPolicyInput {
-  """Policy row ids to purge."""
-  ids: [UUID!]!
+  """`config_name`s to purge."""
+  configNames: [String!]!
 }
 
 """Added in UNRELEASED. Admin bulk update input."""
@@ -267,7 +254,7 @@ type AdminBulkUpdateAppConfigPoliciesPayload {
 """Added in UNRELEASED. Admin bulk update input for app-config policies."""
 input AdminBulkUpdateAppConfigPolicyInput {
   """Policies to update."""
-  items: [AdminAppConfigPolicyUpdateItemInput!]!
+  items: [AdminAppConfigPolicyItemInput!]!
 }
 
 """Added in 26.4.2. Admin input for creating a keypair for a user."""
@@ -758,12 +745,6 @@ input AppConfigFilter {
 
   """Filter by target user id (admin cross-user search only)."""
   userId: UUIDFilter = null
-
-  """Filter by the oldest contributing fragment's creation timestamp."""
-  createdAt: DateTimeFilter = null
-
-  """Filter by the latest contributing fragment's update timestamp."""
-  updatedAt: DateTimeFilter = null
 }
 
 """Added in UNRELEASED. Raw per-scope app-config fragment."""
@@ -850,7 +831,6 @@ enum AppConfigFragmentOrderField {
   SCOPE_ID
   NAME
   CREATED_AT
-  UPDATED_AT
 }
 
 """Added in UNRELEASED. Specifies ordering for merged AppConfig results."""
@@ -866,8 +846,6 @@ input AppConfigOrderBy {
 enum AppConfigOrderField {
   USER_ID
   NAME
-  CREATED_AT
-  UPDATED_AT
 }
 
 """Added in UNRELEASED. Scoped app-config policy."""
@@ -892,6 +870,9 @@ type AppConfigPolicy implements Node {
 type AppConfigPolicyBulkError {
   """Original position in the input list."""
   index: Int!
+
+  """`config_name` of the failed row."""
+  configName: String!
 
   """Reason for the failure."""
   message: String!
@@ -1620,6 +1601,25 @@ type BulkAssignRolePayload {
   failed: [BulkAssignRoleError!]!
 }
 
+"""
+Added in UNRELEASED. Self-service bulk create — scope is `USER` / `current_user`.
+"""
+input MyBulkCreateAppConfigFragmentInput {
+  """USER-scope rows to create."""
+  items: [MyAppConfigFragmentItemInput!]!
+}
+
+"""
+Added in UNRELEASED. Payload for `myBulkCreateAppConfigFragments` (recomputed views).
+"""
+type MyBulkCreateAppConfigFragmentsPayload {
+  """Recomputed merged AppConfig views for each created USER fragment."""
+  created: [AppConfig!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
+}
+
 """Added in 26.2.0. Error information for a failed user in bulk creation."""
 type BulkCreateUserV2Error {
   """Original position in the input list."""
@@ -1742,6 +1742,25 @@ type BulkRevokeRolePayload {
 
   """Users that failed to be revoked"""
   failed: [BulkRevokeRoleError!]!
+}
+
+"""
+Added in UNRELEASED. Self-service bulk update — scope is `USER` / `current_user`.
+"""
+input MyBulkUpdateAppConfigFragmentInput {
+  """USER-scope rows to update."""
+  items: [MyAppConfigFragmentItemInput!]!
+}
+
+"""
+Added in UNRELEASED. Payload for `myBulkUpdateAppConfigFragments` (recomputed views).
+"""
+type MyBulkUpdateAppConfigFragmentsPayload {
+  """Recomputed merged AppConfig views for each updated USER fragment."""
+  updated: [AppConfig!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
 }
 
 """Added in 26.3.0. Error information for a failed user in bulk update."""
@@ -7177,7 +7196,7 @@ type Mutation {
   adminBulkUpdateAppConfigPolicies(input: AdminBulkUpdateAppConfigPolicyInput!): AdminBulkUpdateAppConfigPoliciesPayload!
 
   """
-  Added in UNRELEASED. Hard-delete policies by row id; rows still referenced by fragments surface in `failed`. Admin only.
+  Added in UNRELEASED. Rejects items whose `config_name` still has referencing fragment rows. Admin only.
   """
   adminBulkPurgeAppConfigPolicies(input: AdminBulkPurgeAppConfigPolicyInput!): AdminBulkPurgeAppConfigPoliciesPayload!
 
@@ -7432,44 +7451,6 @@ input MyAppConfigFragmentItemInput {
 
   """Raw configuration payload."""
   config: JSON!
-}
-
-"""
-Added in UNRELEASED. Self-service bulk create — scope is `USER` / `current_user`.
-"""
-input MyBulkCreateAppConfigFragmentInput {
-  """USER-scope rows to create."""
-  items: [MyAppConfigFragmentItemInput!]!
-}
-
-"""
-Added in UNRELEASED. Payload for `bulkCreateMyAppConfigFragments` (recomputed views).
-"""
-type MyBulkCreateAppConfigFragmentsPayload {
-  """Recomputed merged AppConfig views for each created USER fragment."""
-  created: [AppConfig!]!
-
-  """Per-item failures."""
-  failed: [AppConfigFragmentBulkError!]!
-}
-
-"""
-Added in UNRELEASED. Self-service bulk update — scope is `USER` / `current_user`.
-"""
-input MyBulkUpdateAppConfigFragmentInput {
-  """USER-scope rows to update."""
-  items: [MyAppConfigFragmentItemInput!]!
-}
-
-"""
-Added in UNRELEASED. Payload for `bulkUpdateMyAppConfigFragments` (recomputed views).
-"""
-type MyBulkUpdateAppConfigFragmentsPayload {
-  """Recomputed merged AppConfig views for each updated USER fragment."""
-  updated: [AppConfig!]!
-
-  """Per-item failures."""
-  failed: [AppConfigFragmentBulkError!]!
 }
 
 """
@@ -8998,9 +8979,9 @@ type Query {
   adminImageAliases(filter: ImageV2AliasFilter = null, orderBy: [ImageV2AliasOrderByGQL!] = null, before: String = null, after: String = null, first: Int = null, last: Int = null, limit: Int = null, offset: Int = null): ImageV2AliasConnection
 
   """
-  Added in UNRELEASED. Get a single app-config policy by row id. Available to any authenticated user.
+  Added in UNRELEASED. Get a single app-config policy by `config_name`. Available to any authenticated user.
   """
-  appConfigPolicy(id: UUID!): AppConfigPolicy
+  appConfigPolicy(configName: String!): AppConfigPolicy
 
   """
   Added in UNRELEASED. List app-config policies with filtering and pagination. Available to any authenticated user.
