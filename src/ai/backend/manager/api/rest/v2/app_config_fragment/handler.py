@@ -1,4 +1,4 @@
-"""REST v2 handler for the app-config fragment domain (BEP-1052 §4).
+"""REST v2 handler for the app-config fragment domain.
 
 Writes are **bulk-only** per BEP §3 — the single-item create / update /
 purge endpoints were removed in favour of `/bulk-create`,
@@ -18,8 +18,8 @@ from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
     AdminBulkPurgeAppConfigFragmentsInput,
     AdminBulkUpdateAppConfigFragmentsInput,
     AppConfigFragmentKeyInput,
-    BulkCreateMyAppConfigFragmentsInput,
-    BulkUpdateMyAppConfigFragmentsInput,
+    MyBulkCreateAppConfigFragmentsInput,
+    MyBulkUpdateAppConfigFragmentsInput,
     SearchAppConfigFragmentsInput,
 )
 from ai.backend.common.dto.manager.v2.app_config_fragment.types import AppConfigScopeType
@@ -86,7 +86,7 @@ class V2AppConfigFragmentHandler:
         result = await self._adapter.admin_search(body.parsed)
         return APIResponse.build(status_code=HTTPStatus.OK, response_model=result)
 
-    # ── Admin bulk writes (BEP-1052 §3) ──────────────────────────
+    # ── Admin bulk writes ──────────────────────────
 
     async def admin_bulk_create(
         self,
@@ -112,11 +112,11 @@ class V2AppConfigFragmentHandler:
         result = await self._adapter.admin_bulk_purge(body.parsed)
         return APIResponse.build(status_code=HTTPStatus.OK, response_model=result)
 
-    # ── Self-service bulk writes (BEP-1052 §3) ───────────────────
+    # ── Self-service bulk writes ───────────────────
 
     async def my_bulk_create(
         self,
-        body: BodyParam[BulkCreateMyAppConfigFragmentsInput],
+        body: BodyParam[MyBulkCreateAppConfigFragmentsInput],
     ) -> APIResponse:
         """Self-service bulk create on the caller's `USER` row."""
         result = await self._app_config_adapter.my_bulk_create(body.parsed)
@@ -124,7 +124,7 @@ class V2AppConfigFragmentHandler:
 
     async def my_bulk_update(
         self,
-        body: BodyParam[BulkUpdateMyAppConfigFragmentsInput],
+        body: BodyParam[MyBulkUpdateAppConfigFragmentsInput],
     ) -> APIResponse:
         """Self-service bulk update on the caller's `USER` row."""
         result = await self._app_config_adapter.my_bulk_update(body.parsed)

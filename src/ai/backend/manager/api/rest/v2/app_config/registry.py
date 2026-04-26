@@ -1,4 +1,4 @@
-"""Route registration for v2 AppConfig merged-view endpoints (BEP-1052 §5)."""
+"""Route registration for v2 AppConfig merged-view endpoints."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ def register_v2_app_config_routes(
     handler: V2AppConfigHandler,
     route_deps: RouteDeps,
 ) -> RouteRegistry:
-    """Register all v2 `/v2/app-configs/*` routes (BEP-1052 §4).
+    """Register all v2 `/v2/app-configs/*` routes.
 
     Read-only surface — writes go through `/v2/app-config-fragments/...`
     (§4). Self-service routes land under the `/my/...` prefix so the

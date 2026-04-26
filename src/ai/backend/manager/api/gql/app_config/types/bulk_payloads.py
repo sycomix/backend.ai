@@ -24,7 +24,7 @@ from ai.backend.manager.api.gql.pydantic_compat import PydanticOutputMixin
 @gql_pydantic_type(
     BackendAIGQLMeta(
         added_version=NEXT_RELEASE_VERSION,
-        description="Payload for `bulkCreateMyAppConfigFragments` (recomputed views).",
+        description="Payload for `myBulkCreateAppConfigFragments` (recomputed views).",
     ),
     model=MyBulkCreatePayloadDTO,
     name="MyBulkCreateAppConfigFragmentsPayload",
@@ -41,7 +41,7 @@ class MyBulkCreateAppConfigFragmentsPayloadGQL(PydanticOutputMixin[MyBulkCreateP
 @gql_pydantic_type(
     BackendAIGQLMeta(
         added_version=NEXT_RELEASE_VERSION,
-        description="Payload for `bulkUpdateMyAppConfigFragments` (recomputed views).",
+        description="Payload for `myBulkUpdateAppConfigFragments` (recomputed views).",
     ),
     model=MyBulkUpdatePayloadDTO,
     name="MyBulkUpdateAppConfigFragmentsPayload",

@@ -1,4 +1,4 @@
-"""Route registration for v2 app-config fragment endpoints (BEP-1052 §4)."""
+"""Route registration for v2 app-config fragment endpoints."""
 
 from __future__ import annotations
 
@@ -17,14 +17,14 @@ def register_v2_app_config_fragment_routes(
     handler: V2AppConfigFragmentHandler,
     route_deps: RouteDeps,
 ) -> RouteRegistry:
-    """Register all v2 app-config fragment routes (BEP-1052 §4).
+    """Register all v2 app-config fragment routes.
 
     - `POST /get` reads a single row via body (three-field natural key).
     - Scoped search mounts at `/{scope_type}/{scope_id}/search`.
     - Admin cross-scope search + bulk writes are admin-only.
     - `/my/bulk-create` and `/my/bulk-update` are self-service writes
       on the caller's `USER` row (no `/my/bulk-purge` — admin-only
-      cleanup per BEP-1052 §3).
+      cleanup ).
     """
     reg = RouteRegistry.create("app-config-fragments", route_deps.cors_options)
 
@@ -37,7 +37,7 @@ def register_v2_app_config_fragment_routes(
         middlewares=[auth_required],
     )
     reg.add("POST", "/search", handler.admin_search, middlewares=[superadmin_required])
-    # Admin bulk writes (BEP-1052 §3 — bulk-only)
+    # Admin bulk writes (bulk-only)
     reg.add("POST", "/bulk-create", handler.admin_bulk_create, middlewares=[superadmin_required])
     reg.add("POST", "/bulk-update", handler.admin_bulk_update, middlewares=[superadmin_required])
     reg.add("POST", "/bulk-purge", handler.admin_bulk_purge, middlewares=[superadmin_required])

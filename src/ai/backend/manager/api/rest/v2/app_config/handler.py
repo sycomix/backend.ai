@@ -1,4 +1,4 @@
-"""REST v2 handler for the AppConfig merged-view domain (BEP-1052 §5)."""
+"""REST v2 handler for the AppConfig merged-view domain."""
 
 from __future__ import annotations
 

@@ -63,7 +63,7 @@ class SearchAppConfigsPayload(BaseResponseModel):
 
 
 class MyBulkCreateAppConfigFragmentsPayload(BaseResponseModel):
-    """Payload for `bulkCreateMyAppConfigFragments`.
+    """Payload for `myBulkCreateAppConfigFragments`.
 
     Each successfully created row produces a recomputed merged
     `AppConfigNode`; failures are collected per-item.
@@ -76,7 +76,7 @@ class MyBulkCreateAppConfigFragmentsPayload(BaseResponseModel):
 
 
 class MyBulkUpdateAppConfigFragmentsPayload(BaseResponseModel):
-    """Payload for `bulkUpdateMyAppConfigFragments`."""
+    """Payload for `myBulkUpdateAppConfigFragments`."""
 
     updated: list[AppConfigNode] = Field(
         description="Recomputed merged AppConfig views for each updated USER fragment.",
