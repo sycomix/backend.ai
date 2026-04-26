@@ -1063,6 +1063,12 @@ input AppConfigFilter
 
   """Filter by target user id (admin cross-user search only)."""
   userId: UUIDFilter = null
+
+  """Filter by the oldest contributing fragment's creation timestamp."""
+  createdAt: DateTimeFilter = null
+
+  """Filter by the latest contributing fragment's update timestamp."""
+  updatedAt: DateTimeFilter = null
 }
 
 """Added in UNRELEASED. Raw per-scope app-config fragment."""
@@ -1161,6 +1167,7 @@ enum AppConfigFragmentOrderField
   SCOPE_ID @join__enumValue(graph: STRAWBERRY)
   NAME @join__enumValue(graph: STRAWBERRY)
   CREATED_AT @join__enumValue(graph: STRAWBERRY)
+  UPDATED_AT @join__enumValue(graph: STRAWBERRY)
 }
 
 """Added in UNRELEASED. Specifies ordering for merged AppConfig results."""
@@ -1180,6 +1187,8 @@ enum AppConfigOrderField
 {
   USER_ID @join__enumValue(graph: STRAWBERRY)
   NAME @join__enumValue(graph: STRAWBERRY)
+  CREATED_AT @join__enumValue(graph: STRAWBERRY)
+  UPDATED_AT @join__enumValue(graph: STRAWBERRY)
 }
 
 """Added in UNRELEASED. Scoped app-config policy (BEP-1052 §1)."""
@@ -2267,7 +2276,7 @@ type BulkAssignRolePayload
 """
 Added in UNRELEASED. Self-service bulk create — scope is `USER` / `current_user`.
 """
-input BulkCreateMyAppConfigFragmentInput
+input MyBulkCreateAppConfigFragmentInput
   @join__type(graph: STRAWBERRY)
 {
   """USER-scope rows to create."""
@@ -2275,9 +2284,9 @@ input BulkCreateMyAppConfigFragmentInput
 }
 
 """
-Added in UNRELEASED. Payload for `bulkCreateMyAppConfigFragments` (recomputed views).
+Added in UNRELEASED. Payload for `myBulkCreateAppConfigFragments` (recomputed views).
 """
-type BulkCreateMyAppConfigFragmentsPayload
+type MyBulkCreateAppConfigFragmentsPayload
   @join__type(graph: STRAWBERRY)
 {
   """Recomputed merged AppConfig views for each created USER fragment."""
@@ -2442,7 +2451,7 @@ type BulkRevokeRolePayload
 """
 Added in UNRELEASED. Self-service bulk update — scope is `USER` / `current_user`.
 """
-input BulkUpdateMyAppConfigFragmentInput
+input MyBulkUpdateAppConfigFragmentInput
   @join__type(graph: STRAWBERRY)
 {
   """USER-scope rows to update."""
@@ -2450,9 +2459,9 @@ input BulkUpdateMyAppConfigFragmentInput
 }
 
 """
-Added in UNRELEASED. Payload for `bulkUpdateMyAppConfigFragments` (recomputed views).
+Added in UNRELEASED. Payload for `myBulkUpdateAppConfigFragments` (recomputed views).
 """
-type BulkUpdateMyAppConfigFragmentsPayload
+type MyBulkUpdateAppConfigFragmentsPayload
   @join__type(graph: STRAWBERRY)
 {
   """Recomputed merged AppConfig views for each updated USER fragment."""
@@ -11334,12 +11343,12 @@ type Mutation
   """
   Added in UNRELEASED. Strict insert on the caller's USER row; duplicates fail per-item. Returns recomputed merged `AppConfig` views.
   """
-  bulkCreateMyAppConfigFragments(input: BulkCreateMyAppConfigFragmentInput!): BulkCreateMyAppConfigFragmentsPayload! @join__field(graph: STRAWBERRY)
+  myBulkCreateAppConfigFragments(input: MyBulkCreateAppConfigFragmentInput!): MyBulkCreateAppConfigFragmentsPayload! @join__field(graph: STRAWBERRY)
 
   """
   Added in UNRELEASED. Wholesale replacement on the caller's USER row; missing rows are returned as failures. Returns recomputed merged `AppConfig` views.
   """
-  bulkUpdateMyAppConfigFragments(input: BulkUpdateMyAppConfigFragmentInput!): BulkUpdateMyAppConfigFragmentsPayload! @join__field(graph: STRAWBERRY)
+  myBulkUpdateAppConfigFragments(input: MyBulkUpdateAppConfigFragmentInput!): MyBulkUpdateAppConfigFragmentsPayload! @join__field(graph: STRAWBERRY)
 
   """Added in 26.3.0. Create a new query definition (admin only)"""
   adminCreatePrometheusQueryPreset(input: CreateQueryDefinitionInput!): CreateQueryDefinitionPayload! @join__field(graph: STRAWBERRY)

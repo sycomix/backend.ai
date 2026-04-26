@@ -3,9 +3,9 @@ from .bulk_inputs import (
     AdminBulkCreateAppConfigFragmentInputGQL,
     AdminBulkPurgeAppConfigFragmentInputGQL,
     AdminBulkUpdateAppConfigFragmentInputGQL,
-    BulkCreateMyAppConfigFragmentInputGQL,
-    BulkUpdateMyAppConfigFragmentInputGQL,
     MyAppConfigFragmentItemInputGQL,
+    MyBulkCreateAppConfigFragmentInputGQL,
+    MyBulkUpdateAppConfigFragmentInputGQL,
 )
 from .bulk_payloads import (
     AdminBulkCreateAppConfigFragmentsPayloadGQL,
@@ -37,8 +37,8 @@ __all__ = [
     "AppConfigFragmentOrderByGQL",
     "AppConfigFragmentOrderFieldGQL",
     "AppConfigScopeTypeGQL",
-    "BulkCreateMyAppConfigFragmentInputGQL",
-    "BulkUpdateMyAppConfigFragmentInputGQL",
+    "MyBulkCreateAppConfigFragmentInputGQL",
+    "MyBulkUpdateAppConfigFragmentInputGQL",
     "MyAppConfigFragmentItemInputGQL",
     "PurgeAppConfigFragmentKeyGQL",
 ]

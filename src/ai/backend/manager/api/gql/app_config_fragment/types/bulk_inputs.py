@@ -17,13 +17,13 @@ from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
     AdminBulkUpdateAppConfigFragmentsInput as AdminBulkUpdateInputDTO,
 )
 from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
-    BulkCreateMyAppConfigFragmentsInput as BulkCreateMyInputDTO,
-)
-from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
-    BulkUpdateMyAppConfigFragmentsInput as BulkUpdateMyInputDTO,
-)
-from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
     MyAppConfigFragmentItemInput as MyItemInputDTO,
+)
+from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
+    MyBulkCreateAppConfigFragmentsInput as MyBulkCreateInputDTO,
+)
+from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
+    MyBulkUpdateAppConfigFragmentsInput as MyBulkUpdateInputDTO,
 )
 from ai.backend.common.meta.meta import NEXT_RELEASE_VERSION
 from ai.backend.manager.api.gql.app_config_fragment.types.inputs import (
@@ -99,9 +99,9 @@ class MyAppConfigFragmentItemInputGQL(PydanticInputMixin[MyItemInputDTO]):
         added_version=NEXT_RELEASE_VERSION,
         description="Self-service bulk create — scope is `USER` / `current_user`.",
     ),
-    name="BulkCreateMyAppConfigFragmentInput",
+    name="MyBulkCreateAppConfigFragmentInput",
 )
-class BulkCreateMyAppConfigFragmentInputGQL(PydanticInputMixin[BulkCreateMyInputDTO]):
+class MyBulkCreateAppConfigFragmentInputGQL(PydanticInputMixin[MyBulkCreateInputDTO]):
     items: list[MyAppConfigFragmentItemInputGQL] = gql_field(
         description="USER-scope rows to create.",
     )
@@ -112,9 +112,9 @@ class BulkCreateMyAppConfigFragmentInputGQL(PydanticInputMixin[BulkCreateMyInput
         added_version=NEXT_RELEASE_VERSION,
         description="Self-service bulk update — scope is `USER` / `current_user`.",
     ),
-    name="BulkUpdateMyAppConfigFragmentInput",
+    name="MyBulkUpdateAppConfigFragmentInput",
 )
-class BulkUpdateMyAppConfigFragmentInputGQL(PydanticInputMixin[BulkUpdateMyInputDTO]):
+class MyBulkUpdateAppConfigFragmentInputGQL(PydanticInputMixin[MyBulkUpdateInputDTO]):
     items: list[MyAppConfigFragmentItemInputGQL] = gql_field(
         description="USER-scope rows to update.",
     )

@@ -9,7 +9,7 @@ from uuid import UUID
 from pydantic import Field
 
 from ai.backend.common.api_handlers import BaseRequestModel
-from ai.backend.common.dto.manager.query import StringFilter, UUIDFilter
+from ai.backend.common.dto.manager.query import DateTimeFilter, StringFilter, UUIDFilter
 
 from .types import AppConfigOrderField, OrderDirection
 
@@ -31,12 +31,26 @@ class GetUserAppConfigInput(BaseRequestModel):
 
 
 class AppConfigFilter(BaseRequestModel):
-    """Filter for AppConfig merged-view search."""
+    """Filter for AppConfig merged-view search.
+
+    `created_at` / `updated_at` filter against the **oldest** /
+    **latest** timestamp across the contributing fragments — the
+    natural projection of "when was this config first created" and
+    "when was it last touched".
+    """
 
     name: StringFilter | None = Field(default=None, description="Filter by policy name.")
     user_id: UUIDFilter | None = Field(
         default=None,
         description="Filter by target user id (admin cross-user search only).",
+    )
+    created_at: DateTimeFilter | None = Field(
+        default=None,
+        description=("Filter by the oldest contributing fragment's creation timestamp."),
+    )
+    updated_at: DateTimeFilter | None = Field(
+        default=None,
+        description=("Filter by the latest contributing fragment's update timestamp."),
     )
 
 

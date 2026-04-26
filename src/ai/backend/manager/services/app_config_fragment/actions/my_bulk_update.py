@@ -15,7 +15,7 @@ from ai.backend.manager.data.app_config_fragment.bulk_types import (
 
 @dataclass
 class MyBulkUpdateAppConfigFragmentsAction(BaseBulkAction[MyAppConfigFragmentBulkItem]):
-    """Self-service bulk update — see `BulkCreateMyAppConfigFragmentsAction`."""
+    """Self-service bulk update — see `MyBulkCreateAppConfigFragmentsAction`."""
 
     items: list[MyAppConfigFragmentBulkItem] = field(default_factory=list)
 

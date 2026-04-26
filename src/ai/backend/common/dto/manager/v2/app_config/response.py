@@ -17,8 +17,8 @@ from ai.backend.common.dto.manager.v2.app_config_fragment.response import (
 
 __all__ = (
     "AppConfigNode",
-    "BulkCreateMyAppConfigFragmentsPayload",
-    "BulkUpdateMyAppConfigFragmentsPayload",
+    "MyBulkCreateAppConfigFragmentsPayload",
+    "MyBulkUpdateAppConfigFragmentsPayload",
     "GetUserAppConfigPayload",
     "SearchAppConfigsPayload",
 )
@@ -62,7 +62,7 @@ class SearchAppConfigsPayload(BaseResponseModel):
     has_previous_page: bool = Field(default=False, description="Whether there is a previous page.")
 
 
-class BulkCreateMyAppConfigFragmentsPayload(BaseResponseModel):
+class MyBulkCreateAppConfigFragmentsPayload(BaseResponseModel):
     """Payload for `bulkCreateMyAppConfigFragments`.
 
     Each successfully created row produces a recomputed merged
@@ -75,7 +75,7 @@ class BulkCreateMyAppConfigFragmentsPayload(BaseResponseModel):
     failed: list[AppConfigFragmentBulkError] = Field(description="Per-item failures.")
 
 
-class BulkUpdateMyAppConfigFragmentsPayload(BaseResponseModel):
+class MyBulkUpdateAppConfigFragmentsPayload(BaseResponseModel):
     """Payload for `bulkUpdateMyAppConfigFragments`."""
 
     updated: list[AppConfigNode] = Field(

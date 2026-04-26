@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 from ai.backend.common.dto.manager.v2.app_config.response import (
-    BulkCreateMyAppConfigFragmentsPayload as BulkCreateMyPayloadDTO,
+    MyBulkCreateAppConfigFragmentsPayload as MyBulkCreatePayloadDTO,
 )
 from ai.backend.common.dto.manager.v2.app_config.response import (
-    BulkUpdateMyAppConfigFragmentsPayload as BulkUpdateMyPayloadDTO,
+    MyBulkUpdateAppConfigFragmentsPayload as MyBulkUpdatePayloadDTO,
 )
 from ai.backend.common.meta.meta import NEXT_RELEASE_VERSION
 from ai.backend.manager.api.gql.app_config.types.node import AppConfigGQL
@@ -26,10 +26,10 @@ from ai.backend.manager.api.gql.pydantic_compat import PydanticOutputMixin
         added_version=NEXT_RELEASE_VERSION,
         description="Payload for `bulkCreateMyAppConfigFragments` (recomputed views).",
     ),
-    model=BulkCreateMyPayloadDTO,
-    name="BulkCreateMyAppConfigFragmentsPayload",
+    model=MyBulkCreatePayloadDTO,
+    name="MyBulkCreateAppConfigFragmentsPayload",
 )
-class BulkCreateMyAppConfigFragmentsPayloadGQL(PydanticOutputMixin[BulkCreateMyPayloadDTO]):
+class MyBulkCreateAppConfigFragmentsPayloadGQL(PydanticOutputMixin[MyBulkCreatePayloadDTO]):
     created: list[AppConfigGQL] = gql_field(
         description="Recomputed merged AppConfig views for each created USER fragment.",
     )
@@ -43,10 +43,10 @@ class BulkCreateMyAppConfigFragmentsPayloadGQL(PydanticOutputMixin[BulkCreateMyP
         added_version=NEXT_RELEASE_VERSION,
         description="Payload for `bulkUpdateMyAppConfigFragments` (recomputed views).",
     ),
-    model=BulkUpdateMyPayloadDTO,
-    name="BulkUpdateMyAppConfigFragmentsPayload",
+    model=MyBulkUpdatePayloadDTO,
+    name="MyBulkUpdateAppConfigFragmentsPayload",
 )
-class BulkUpdateMyAppConfigFragmentsPayloadGQL(PydanticOutputMixin[BulkUpdateMyPayloadDTO]):
+class MyBulkUpdateAppConfigFragmentsPayloadGQL(PydanticOutputMixin[MyBulkUpdatePayloadDTO]):
     updated: list[AppConfigGQL] = gql_field(
         description="Recomputed merged AppConfig views for each updated USER fragment.",
     )

@@ -11,7 +11,12 @@ from ai.backend.common.dto.manager.v2.app_config.request import (
     AppConfigOrder as AppConfigOrderDTO,
 )
 from ai.backend.common.meta.meta import NEXT_RELEASE_VERSION
-from ai.backend.manager.api.gql.base import OrderDirection, StringFilter, UUIDFilter
+from ai.backend.manager.api.gql.base import (
+    DateTimeFilter,
+    OrderDirection,
+    StringFilter,
+    UUIDFilter,
+)
 from ai.backend.manager.api.gql.decorators import (
     BackendAIGQLMeta,
     gql_enum,
@@ -34,6 +39,14 @@ class AppConfigFilterGQL(PydanticInputMixin[AppConfigFilterDTO]):
         description="Filter by target user id (admin cross-user search only).",
         default=None,
     )
+    created_at: DateTimeFilter | None = gql_field(
+        description="Filter by the oldest contributing fragment's creation timestamp.",
+        default=None,
+    )
+    updated_at: DateTimeFilter | None = gql_field(
+        description="Filter by the latest contributing fragment's update timestamp.",
+        default=None,
+    )
 
 
 @gql_enum(
@@ -46,6 +59,8 @@ class AppConfigFilterGQL(PydanticInputMixin[AppConfigFilterDTO]):
 class AppConfigOrderFieldGQL(StrEnum):
     USER_ID = "user_id"
     NAME = "name"
+    CREATED_AT = "created_at"
+    UPDATED_AT = "updated_at"
 
 
 @gql_pydantic_input(

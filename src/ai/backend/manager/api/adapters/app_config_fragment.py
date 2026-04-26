@@ -32,7 +32,6 @@ from ai.backend.common.dto.manager.v2.app_config_fragment.types import (
 from ai.backend.common.dto.manager.v2.app_config_fragment.types import (
     AppConfigScopeType as DTOAppConfigScopeType,
 )
-from ai.backend.common.dto.manager.v2.app_config_fragment.types import OrderDirection
 from ai.backend.manager.api.adapter_options.pagination.pagination import PaginationSpec
 from ai.backend.manager.data.app_config_fragment.bulk_types import (
     AppConfigFragmentBulkItem,

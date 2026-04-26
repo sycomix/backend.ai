@@ -19,15 +19,15 @@ from ai.backend.common.dto.manager.v2.app_config.request import (
 )
 from ai.backend.common.dto.manager.v2.app_config.response import (
     AppConfigNode,
-    BulkCreateMyAppConfigFragmentsPayload,
-    BulkUpdateMyAppConfigFragmentsPayload,
     GetUserAppConfigPayload,
+    MyBulkCreateAppConfigFragmentsPayload,
+    MyBulkUpdateAppConfigFragmentsPayload,
     SearchAppConfigsPayload,
 )
 from ai.backend.common.dto.manager.v2.app_config.types import AppConfigOrderField, OrderDirection
 from ai.backend.common.dto.manager.v2.app_config_fragment.request import (
-    BulkCreateMyAppConfigFragmentsInput,
-    BulkUpdateMyAppConfigFragmentsInput,
+    MyBulkCreateAppConfigFragmentsInput,
+    MyBulkUpdateAppConfigFragmentsInput,
 )
 from ai.backend.common.dto.manager.v2.app_config_fragment.response import (
     AppConfigFragmentBulkError,
@@ -52,14 +52,14 @@ from ai.backend.manager.repositories.base import BatchQuerier, QueryCondition, Q
 from ai.backend.manager.services.app_config_fragment.actions.admin_search_app_configs import (
     AdminSearchAppConfigsAction,
 )
-from ai.backend.manager.services.app_config_fragment.actions.bulk_create_my import (
-    BulkCreateMyAppConfigFragmentsAction,
-)
-from ai.backend.manager.services.app_config_fragment.actions.bulk_update_my import (
-    BulkUpdateMyAppConfigFragmentsAction,
-)
 from ai.backend.manager.services.app_config_fragment.actions.get_user_app_config import (
     GetUserAppConfigAction,
+)
+from ai.backend.manager.services.app_config_fragment.actions.my_bulk_create import (
+    MyBulkCreateAppConfigFragmentsAction,
+)
+from ai.backend.manager.services.app_config_fragment.actions.my_bulk_update import (
+    MyBulkUpdateAppConfigFragmentsAction,
 )
 from ai.backend.manager.services.app_config_fragment.actions.search_user_app_configs import (
     SearchUserAppConfigsAction,
@@ -154,33 +154,33 @@ class AppConfigAdapter(BaseAdapter):
     # reasons travel back through the per-item `failed` list.
 
     async def my_bulk_create(
-        self, input: BulkCreateMyAppConfigFragmentsInput
-    ) -> BulkCreateMyAppConfigFragmentsPayload:
+        self, input: MyBulkCreateAppConfigFragmentsInput
+    ) -> MyBulkCreateAppConfigFragmentsPayload:
         items = [
             MyAppConfigFragmentBulkItem(name=item.name, extra_config=dict(item.extra_config))
             for item in input.items
         ]
-        wrapper = await self._processors.app_config_fragment.bulk_create_my.wait_for_complete(
-            BulkCreateMyAppConfigFragmentsAction(entity_ids=[], items=items)
+        wrapper = await self._processors.app_config_fragment.my_bulk_create.wait_for_complete(
+            MyBulkCreateAppConfigFragmentsAction(entity_ids=[], items=items)
         )
         result = wrapper.result
-        return BulkCreateMyAppConfigFragmentsPayload(
+        return MyBulkCreateAppConfigFragmentsPayload(
             created=[self._data_to_dto(item) for item in result.created],
             failed=[self._bulk_error_to_dto(err) for err in result.failed],
         )
 
     async def my_bulk_update(
-        self, input: BulkUpdateMyAppConfigFragmentsInput
-    ) -> BulkUpdateMyAppConfigFragmentsPayload:
+        self, input: MyBulkUpdateAppConfigFragmentsInput
+    ) -> MyBulkUpdateAppConfigFragmentsPayload:
         items = [
             MyAppConfigFragmentBulkItem(name=item.name, extra_config=dict(item.extra_config))
             for item in input.items
         ]
-        wrapper = await self._processors.app_config_fragment.bulk_update_my.wait_for_complete(
-            BulkUpdateMyAppConfigFragmentsAction(entity_ids=[], items=items)
+        wrapper = await self._processors.app_config_fragment.my_bulk_update.wait_for_complete(
+            MyBulkUpdateAppConfigFragmentsAction(entity_ids=[], items=items)
         )
         result = wrapper.result
-        return BulkUpdateMyAppConfigFragmentsPayload(
+        return MyBulkUpdateAppConfigFragmentsPayload(
             updated=[self._data_to_dto(item) for item in result.updated],
             failed=[self._bulk_error_to_dto(err) for err in result.failed],
         )

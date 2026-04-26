@@ -6,8 +6,8 @@ from strawberry import Info
 
 from ai.backend.common.meta.meta import NEXT_RELEASE_VERSION
 from ai.backend.manager.api.gql.app_config.types.bulk_payloads import (
-    BulkCreateMyAppConfigFragmentsPayloadGQL,
-    BulkUpdateMyAppConfigFragmentsPayloadGQL,
+    MyBulkCreateAppConfigFragmentsPayloadGQL,
+    MyBulkUpdateAppConfigFragmentsPayloadGQL,
 )
 from ai.backend.manager.api.gql.app_config_fragment.types import (
     AdminBulkCreateAppConfigFragmentInputGQL,
@@ -16,8 +16,8 @@ from ai.backend.manager.api.gql.app_config_fragment.types import (
     AdminBulkPurgeAppConfigFragmentsPayloadGQL,
     AdminBulkUpdateAppConfigFragmentInputGQL,
     AdminBulkUpdateAppConfigFragmentsPayloadGQL,
-    BulkCreateMyAppConfigFragmentInputGQL,
-    BulkUpdateMyAppConfigFragmentInputGQL,
+    MyBulkCreateAppConfigFragmentInputGQL,
+    MyBulkUpdateAppConfigFragmentInputGQL,
 )
 from ai.backend.manager.api.gql.decorators import (
     BackendAIGQLMeta,
@@ -87,12 +87,12 @@ async def admin_bulk_purge_app_config_fragments(
         ),
     )
 )
-async def bulk_create_my_app_config_fragments(
+async def my_bulk_create_app_config_fragments(
     info: Info[StrawberryGQLContext],
-    input: BulkCreateMyAppConfigFragmentInputGQL,
-) -> BulkCreateMyAppConfigFragmentsPayloadGQL:
+    input: MyBulkCreateAppConfigFragmentInputGQL,
+) -> MyBulkCreateAppConfigFragmentsPayloadGQL:
     result = await info.context.adapters.app_config.my_bulk_create(input.to_pydantic())
-    return BulkCreateMyAppConfigFragmentsPayloadGQL.from_pydantic(result)
+    return MyBulkCreateAppConfigFragmentsPayloadGQL.from_pydantic(result)
 
 
 @gql_mutation(
@@ -104,9 +104,9 @@ async def bulk_create_my_app_config_fragments(
         ),
     )
 )
-async def bulk_update_my_app_config_fragments(
+async def my_bulk_update_app_config_fragments(
     info: Info[StrawberryGQLContext],
-    input: BulkUpdateMyAppConfigFragmentInputGQL,
-) -> BulkUpdateMyAppConfigFragmentsPayloadGQL:
+    input: MyBulkUpdateAppConfigFragmentInputGQL,
+) -> MyBulkUpdateAppConfigFragmentsPayloadGQL:
     result = await info.context.adapters.app_config.my_bulk_update(input.to_pydantic())
-    return BulkUpdateMyAppConfigFragmentsPayloadGQL.from_pydantic(result)
+    return MyBulkUpdateAppConfigFragmentsPayloadGQL.from_pydantic(result)

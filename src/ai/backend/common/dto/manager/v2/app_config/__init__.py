@@ -11,9 +11,9 @@ from .request import (
 )
 from .response import (
     AppConfigNode,
-    BulkCreateMyAppConfigFragmentsPayload,
-    BulkUpdateMyAppConfigFragmentsPayload,
     GetUserAppConfigPayload,
+    MyBulkCreateAppConfigFragmentsPayload,
+    MyBulkUpdateAppConfigFragmentsPayload,
     SearchAppConfigsPayload,
 )
 from .types import (
@@ -28,8 +28,8 @@ __all__ = (
     "AppConfigOrder",
     "AppConfigOrderField",
     "AppConfigScopeType",
-    "BulkCreateMyAppConfigFragmentsPayload",
-    "BulkUpdateMyAppConfigFragmentsPayload",
+    "MyBulkCreateAppConfigFragmentsPayload",
+    "MyBulkUpdateAppConfigFragmentsPayload",
     "GetUserAppConfigInput",
     "GetUserAppConfigPayload",
     "OrderDirection",

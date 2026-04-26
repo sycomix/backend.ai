@@ -21,3 +21,5 @@ class AppConfigOrderField(StrEnum):
 
     USER_ID = "user_id"
     NAME = "name"
+    CREATED_AT = "created_at"
+    UPDATED_AT = "updated_at"

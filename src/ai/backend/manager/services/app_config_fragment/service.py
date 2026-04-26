@@ -36,14 +36,6 @@ from ai.backend.manager.services.app_config_fragment.actions.admin_search_app_co
     AdminSearchAppConfigsAction,
     AdminSearchAppConfigsActionResult,
 )
-from ai.backend.manager.services.app_config_fragment.actions.bulk_create_my import (
-    BulkCreateMyAppConfigFragmentsAction,
-    BulkCreateMyAppConfigFragmentsActionResult,
-)
-from ai.backend.manager.services.app_config_fragment.actions.bulk_update_my import (
-    BulkUpdateMyAppConfigFragmentsAction,
-    BulkUpdateMyAppConfigFragmentsActionResult,
-)
 from ai.backend.manager.services.app_config_fragment.actions.get import (
     GetAppConfigFragmentAction,
     GetAppConfigFragmentActionResult,
@@ -51,6 +43,14 @@ from ai.backend.manager.services.app_config_fragment.actions.get import (
 from ai.backend.manager.services.app_config_fragment.actions.get_user_app_config import (
     GetUserAppConfigAction,
     GetUserAppConfigActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.my_bulk_create import (
+    MyBulkCreateAppConfigFragmentsAction,
+    MyBulkCreateAppConfigFragmentsActionResult,
+)
+from ai.backend.manager.services.app_config_fragment.actions.my_bulk_update import (
+    MyBulkUpdateAppConfigFragmentsAction,
+    MyBulkUpdateAppConfigFragmentsActionResult,
 )
 from ai.backend.manager.services.app_config_fragment.actions.search import (
     SearchAppConfigFragmentsAction,
