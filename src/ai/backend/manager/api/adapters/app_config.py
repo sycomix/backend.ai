@@ -157,7 +157,7 @@ class AppConfigAdapter(BaseAdapter):
         self, input: MyBulkCreateAppConfigFragmentsInput
     ) -> MyBulkCreateAppConfigFragmentsPayload:
         items = [
-            MyAppConfigFragmentBulkItem(name=item.name, extra_config=dict(item.extra_config))
+            MyAppConfigFragmentBulkItem(name=item.name, config=dict(item.config))
             for item in input.items
         ]
         wrapper = await self._processors.app_config_fragment.my_bulk_create.wait_for_complete(
@@ -173,7 +173,7 @@ class AppConfigAdapter(BaseAdapter):
         self, input: MyBulkUpdateAppConfigFragmentsInput
     ) -> MyBulkUpdateAppConfigFragmentsPayload:
         items = [
-            MyAppConfigFragmentBulkItem(name=item.name, extra_config=dict(item.extra_config))
+            MyAppConfigFragmentBulkItem(name=item.name, config=dict(item.config))
             for item in input.items
         ]
         wrapper = await self._processors.app_config_fragment.my_bulk_update.wait_for_complete(
@@ -268,7 +268,7 @@ class AppConfigAdapter(BaseAdapter):
             scope_type=DTOAppConfigScopeType(data.scope_type.value),
             scope_id=data.scope_id,
             name=data.name,
-            extra_config=dict(data.extra_config) if data.extra_config is not None else None,
+            config=dict(data.config) if data.config is not None else None,
             created_at=data.created_at,
             updated_at=data.updated_at,
         )

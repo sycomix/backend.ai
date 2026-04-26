@@ -38,6 +38,6 @@ class AppConfigFragmentGQL(PydanticOutputMixin[AppConfigFragmentNode]):
     scope_type: AppConfigScopeType = gql_field(description="Scope type.")
     scope_id: str = gql_field(description="Scope id.")
     name: str = gql_field(description="Policy name (FK to app_config_policies).")
-    extra_config: JSON | None = gql_field(description="Raw configuration payload, or null.")
+    config: JSON | None = gql_field(description="Raw configuration payload, or null.")
     created_at: datetime = gql_field(description="Creation timestamp.")
     updated_at: datetime | None = gql_field(description="Last update timestamp.")

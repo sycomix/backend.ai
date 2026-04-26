@@ -46,7 +46,7 @@ from ai.backend.manager.api.gql.pydantic_compat import PydanticInputMixin
 )
 class AdminAppConfigFragmentItemInputGQL(PydanticInputMixin[AdminItemInputDTO]):
     key: AppConfigFragmentKeyInputGQL = gql_field(description="Natural-key identifier.")
-    extra_config: JSON = gql_field(description="Raw configuration payload.")
+    config: JSON = gql_field(description="Raw configuration payload.")
 
 
 @gql_pydantic_input(
@@ -91,7 +91,7 @@ class AdminBulkPurgeAppConfigFragmentInputGQL(PydanticInputMixin[AdminBulkPurgeI
 )
 class MyAppConfigFragmentItemInputGQL(PydanticInputMixin[MyItemInputDTO]):
     name: str = gql_field(description="Policy name.")
-    extra_config: JSON = gql_field(description="Raw configuration payload.")
+    config: JSON = gql_field(description="Raw configuration payload.")
 
 
 @gql_pydantic_input(

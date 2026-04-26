@@ -151,7 +151,7 @@ input AdminAppConfigFragmentItemInput {
   key: AppConfigFragmentKeyInput!
 
   """Raw configuration payload."""
-  extraConfig: JSON!
+  config: JSON!
 }
 
 """Added in UNRELEASED. Per-item input for admin bulk create / update."""
@@ -768,7 +768,7 @@ type AppConfigFragment {
   name: String!
 
   """Raw configuration payload, or null."""
-  extraConfig: JSON
+  config: JSON
 
   """Creation timestamp."""
   createdAt: DateTime!
@@ -7421,7 +7421,7 @@ input MyAppConfigFragmentItemInput {
   name: String!
 
   """Raw configuration payload."""
-  extraConfig: JSON!
+  config: JSON!
 }
 
 """
