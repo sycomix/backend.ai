@@ -116,19 +116,39 @@ class AppConfigFragmentAdminRepository:
         key: AppConfigFragmentKey,
         config: Mapping[str, Any],
     ) -> AppConfigFragmentData:
-        """Update a fragment by natural key. Raises
-        ``AppConfigFragmentNotFound`` when missing."""
-        spec = AppConfigFragmentUpdaterSpec(extra_config=extra_config)
-        result = await self._db_source.update(key, spec)
+        """Update a fragment by natural key. Resolves the natural key
+        to the row's UUID, builds an ``Updater``, and delegates to the
+        DB source. Raises :class:`AppConfigFragmentNotFound` when the
+        row is missing (or vanishes between resolve and write)."""
+        pk_value = await self._db_source.resolve_pk_by_key(key)
+        if pk_value is None:
+            raise _missing(key)
+        updater: Updater[AppConfigFragmentRow] = Updater(
+            spec=AppConfigFragmentUpdaterSpec(config=config),
+            pk_value=pk_value,
+        )
+        result = await self._db_source.update(updater)
+        if result is None:
+            raise _missing(key)
         await self._invalidate(key)
         return result
 
     @app_config_fragment_admin_repository_resilience.apply()
     async def purge(self, key: AppConfigFragmentKey) -> bool:
-        result = await self._db_source.purge(key)
-        if result:
+        """Delete a fragment by natural key. Resolves the natural key,
+        builds a ``Purger``, delegates to the DB source, and (on a
+        real removal) invalidates the merged-view cache."""
+        pk_value = await self._db_source.resolve_pk_by_key(key)
+        if pk_value is None:
+            return False
+        purger: Purger[AppConfigFragmentRow] = Purger(
+            row_class=AppConfigFragmentRow,
+            pk_value=pk_value,
+        )
+        removed = await self._db_source.purge(purger)
+        if removed:
             await self._invalidate(key)
-        return result
+        return removed
 
     async def _invalidate(self, key: AppConfigFragmentKey) -> None:
         if self._cache_source is None:
