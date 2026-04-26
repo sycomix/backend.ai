@@ -1601,25 +1601,6 @@ type BulkAssignRolePayload {
   failed: [BulkAssignRoleError!]!
 }
 
-"""
-Added in UNRELEASED. Self-service bulk create — scope is `USER` / `current_user`.
-"""
-input MyBulkCreateAppConfigFragmentInput {
-  """USER-scope rows to create."""
-  items: [MyAppConfigFragmentItemInput!]!
-}
-
-"""
-Added in UNRELEASED. Payload for `myBulkCreateAppConfigFragments` (recomputed views).
-"""
-type MyBulkCreateAppConfigFragmentsPayload {
-  """Recomputed merged AppConfig views for each created USER fragment."""
-  created: [AppConfig!]!
-
-  """Per-item failures."""
-  failed: [AppConfigFragmentBulkError!]!
-}
-
 """Added in 26.2.0. Error information for a failed user in bulk creation."""
 type BulkCreateUserV2Error {
   """Original position in the input list."""
@@ -1742,25 +1723,6 @@ type BulkRevokeRolePayload {
 
   """Users that failed to be revoked"""
   failed: [BulkRevokeRoleError!]!
-}
-
-"""
-Added in UNRELEASED. Self-service bulk update — scope is `USER` / `current_user`.
-"""
-input MyBulkUpdateAppConfigFragmentInput {
-  """USER-scope rows to update."""
-  items: [MyAppConfigFragmentItemInput!]!
-}
-
-"""
-Added in UNRELEASED. Payload for `myBulkUpdateAppConfigFragments` (recomputed views).
-"""
-type MyBulkUpdateAppConfigFragmentsPayload {
-  """Recomputed merged AppConfig views for each updated USER fragment."""
-  updated: [AppConfig!]!
-
-  """Per-item failures."""
-  failed: [AppConfigFragmentBulkError!]!
 }
 
 """Added in 26.3.0. Error information for a failed user in bulk update."""
@@ -7451,6 +7413,44 @@ input MyAppConfigFragmentItemInput {
 
   """Raw configuration payload."""
   config: JSON!
+}
+
+"""
+Added in UNRELEASED. Self-service bulk create — scope is `USER` / `current_user`.
+"""
+input MyBulkCreateAppConfigFragmentInput {
+  """USER-scope rows to create."""
+  items: [MyAppConfigFragmentItemInput!]!
+}
+
+"""
+Added in UNRELEASED. Payload for `myBulkCreateAppConfigFragments` (recomputed views).
+"""
+type MyBulkCreateAppConfigFragmentsPayload {
+  """Recomputed merged AppConfig views for each created USER fragment."""
+  created: [AppConfig!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
+}
+
+"""
+Added in UNRELEASED. Self-service bulk update — scope is `USER` / `current_user`.
+"""
+input MyBulkUpdateAppConfigFragmentInput {
+  """USER-scope rows to update."""
+  items: [MyAppConfigFragmentItemInput!]!
+}
+
+"""
+Added in UNRELEASED. Payload for `myBulkUpdateAppConfigFragments` (recomputed views).
+"""
+type MyBulkUpdateAppConfigFragmentsPayload {
+  """Recomputed merged AppConfig views for each updated USER fragment."""
+  updated: [AppConfig!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
 }
 
 """

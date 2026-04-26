@@ -2264,29 +2264,6 @@ type BulkAssignRolePayload
   failed: [BulkAssignRoleError!]!
 }
 
-"""
-Added in UNRELEASED. Self-service bulk create — scope is `USER` / `current_user`.
-"""
-input MyBulkCreateAppConfigFragmentInput
-  @join__type(graph: STRAWBERRY)
-{
-  """USER-scope rows to create."""
-  items: [MyAppConfigFragmentItemInput!]!
-}
-
-"""
-Added in UNRELEASED. Payload for `myBulkCreateAppConfigFragments` (recomputed views).
-"""
-type MyBulkCreateAppConfigFragmentsPayload
-  @join__type(graph: STRAWBERRY)
-{
-  """Recomputed merged AppConfig views for each created USER fragment."""
-  created: [AppConfig!]!
-
-  """Per-item failures."""
-  failed: [AppConfigFragmentBulkError!]!
-}
-
 """Added in 26.2.0. Payload for bulk user creation mutation."""
 type BulkCreateUsersV2Payload
   @join__type(graph: STRAWBERRY)
@@ -2437,29 +2414,6 @@ type BulkRevokeRolePayload
 
   """Users that failed to be revoked"""
   failed: [BulkRevokeRoleError!]!
-}
-
-"""
-Added in UNRELEASED. Self-service bulk update — scope is `USER` / `current_user`.
-"""
-input MyBulkUpdateAppConfigFragmentInput
-  @join__type(graph: STRAWBERRY)
-{
-  """USER-scope rows to update."""
-  items: [MyAppConfigFragmentItemInput!]!
-}
-
-"""
-Added in UNRELEASED. Payload for `myBulkUpdateAppConfigFragments` (recomputed views).
-"""
-type MyBulkUpdateAppConfigFragmentsPayload
-  @join__type(graph: STRAWBERRY)
-{
-  """Recomputed merged AppConfig views for each updated USER fragment."""
-  updated: [AppConfig!]!
-
-  """Per-item failures."""
-  failed: [AppConfigFragmentBulkError!]!
 }
 
 """Added in 26.3.0. Payload for bulk user update mutation."""
@@ -11569,6 +11523,52 @@ input MyAppConfigFragmentItemInput
 
   """Raw configuration payload."""
   config: JSON!
+}
+
+"""
+Added in UNRELEASED. Self-service bulk create — scope is `USER` / `current_user`.
+"""
+input MyBulkCreateAppConfigFragmentInput
+  @join__type(graph: STRAWBERRY)
+{
+  """USER-scope rows to create."""
+  items: [MyAppConfigFragmentItemInput!]!
+}
+
+"""
+Added in UNRELEASED. Payload for `myBulkCreateAppConfigFragments` (recomputed views).
+"""
+type MyBulkCreateAppConfigFragmentsPayload
+  @join__type(graph: STRAWBERRY)
+{
+  """Recomputed merged AppConfig views for each created USER fragment."""
+  created: [AppConfig!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
+}
+
+"""
+Added in UNRELEASED. Self-service bulk update — scope is `USER` / `current_user`.
+"""
+input MyBulkUpdateAppConfigFragmentInput
+  @join__type(graph: STRAWBERRY)
+{
+  """USER-scope rows to update."""
+  items: [MyAppConfigFragmentItemInput!]!
+}
+
+"""
+Added in UNRELEASED. Payload for `myBulkUpdateAppConfigFragments` (recomputed views).
+"""
+type MyBulkUpdateAppConfigFragmentsPayload
+  @join__type(graph: STRAWBERRY)
+{
+  """Recomputed merged AppConfig views for each updated USER fragment."""
+  updated: [AppConfig!]!
+
+  """Per-item failures."""
+  failed: [AppConfigFragmentBulkError!]!
 }
 
 """
