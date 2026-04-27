@@ -6,6 +6,7 @@ import asyncio
 import json
 from pathlib import Path
 from typing import Any, cast
+from uuid import UUID
 
 import click
 
@@ -36,11 +37,13 @@ def _load_items(items_arg: str) -> list[dict[str, Any]]:
 def bulk_create(items: str) -> None:
     """Bulk-create policies (partial-success semantics)."""
     from ai.backend.common.dto.manager.v2.app_config_policy.request import (
-        AdminAppConfigPolicyItemInput,
+        AdminAppConfigPolicyCreateItemInput,
         AdminBulkCreateAppConfigPoliciesInput,
     )
 
-    parsed = [AdminAppConfigPolicyItemInput.model_validate(item) for item in _load_items(items)]
+    parsed = [
+        AdminAppConfigPolicyCreateItemInput.model_validate(item) for item in _load_items(items)
+    ]
 
     async def _run() -> None:
         registry = await create_v2_registry(load_v2_config())
@@ -59,19 +62,18 @@ def bulk_create(items: str) -> None:
 @click.option(
     "--items",
     required=True,
-    help=(
-        "JSON list of `{config_name, scope_sources}` items, "
-        "or `@path/to/items.json` to load from file."
-    ),
+    help=("JSON list of `{id, scope_sources}` items, or `@path/to/items.json` to load from file."),
 )
 def bulk_update(items: str) -> None:
     """Bulk-update policy scope chains (partial-success semantics)."""
     from ai.backend.common.dto.manager.v2.app_config_policy.request import (
-        AdminAppConfigPolicyItemInput,
+        AdminAppConfigPolicyUpdateItemInput,
         AdminBulkUpdateAppConfigPoliciesInput,
     )
 
-    parsed = [AdminAppConfigPolicyItemInput.model_validate(item) for item in _load_items(items)]
+    parsed = [
+        AdminAppConfigPolicyUpdateItemInput.model_validate(item) for item in _load_items(items)
+    ]
 
     async def _run() -> None:
         registry = await create_v2_registry(load_v2_config())
@@ -88,26 +90,27 @@ def bulk_update(items: str) -> None:
 
 @app_config_policy.command(name="bulk-purge")
 @click.option(
-    "--config-names",
+    "--ids",
     required=True,
-    help="Comma-separated `config_name`s, or `@path/to/names.json` for a JSON list.",
+    help="Comma-separated policy row UUIDs, or `@path/to/ids.json` for a JSON list.",
 )
-def bulk_purge(config_names: str) -> None:
-    """Bulk-purge policies by `config_name` (partial-success semantics)."""
+def bulk_purge(ids: str) -> None:
+    """Bulk-purge policies by row id (partial-success semantics)."""
     from ai.backend.common.dto.manager.v2.app_config_policy.request import (
         AdminBulkPurgeAppConfigPoliciesInput,
     )
 
-    if config_names.startswith("@"):
-        names = json.loads(Path(config_names[1:]).read_text())
+    if ids.startswith("@"):
+        raw_ids = json.loads(Path(ids[1:]).read_text())
     else:
-        names = [n.strip() for n in config_names.split(",") if n.strip()]
+        raw_ids = [s.strip() for s in ids.split(",") if s.strip()]
+    parsed_ids = [UUID(s) for s in raw_ids]
 
     async def _run() -> None:
         registry = await create_v2_registry(load_v2_config())
         try:
             result = await registry.app_config_policy.admin_bulk_purge(
-                AdminBulkPurgeAppConfigPoliciesInput(config_names=names),
+                AdminBulkPurgeAppConfigPoliciesInput(ids=parsed_ids),
             )
             print_result(result)
         finally:
