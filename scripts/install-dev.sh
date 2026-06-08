@@ -1431,10 +1431,12 @@ configure_backendai() {
 
   # TODO: Automate the following steps
   if [ $CONFIGURE_HA -eq 1 ]; then
-    echo "${RED}[NOTE] Please add the following lines to \"/etc/hosts\" file in your host OS.${NC}"
+    echo "${RED}[REQUIRED] You MUST add the following lines to the \"/etc/hosts\" file in your host OS.${NC}"
     echo "${RED}127.0.0.1 node01${NC}"
     echo "${RED}127.0.0.1 node02${NC}"
     echo "${RED}127.0.0.1 node03${NC}"
+    echo "${RED}The Sentinels announce the master by hostname, so the manager/agent cannot reach it${NC}"
+    echo "${RED}without these entries (required on macOS, where the Docker bridge IP is unreachable).${NC}"
   fi
 }
 
