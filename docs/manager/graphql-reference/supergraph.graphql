@@ -20868,6 +20868,11 @@ type VFolder implements Node
   """Path for unmanaged virtual folders."""
   unmanagedPath: String
 
+  """
+  Added in UNRELEASED. Storage-proxy-sourced usage and quota statistics: file count, used capacity, and capacity/file-count quota limits. Null for list responses where usage is not loaded.
+  """
+  usage: VFolderUsageInfo
+
   """Added in UNRELEASED. Model cards backed by this vfolder."""
   modelCards(filter: ModelCardV2Filter = null, orderBy: [ModelCardV2OrderBy!] = null, before: String = null, after: String = null, first: Int = null, last: Int = null, limit: Int = null, offset: Int = null): ModelCardV2Connection
 }
@@ -21100,6 +21105,18 @@ Added in 24.09.0. One of ['clone', 'assign_permission_to_others', 'read_attribut
 """
 scalar VFolderPermissionValueField
   @join__type(graph: GRAPHENE)
+
+"""
+Added in UNRELEASED. Storage-proxy-sourced usage and quota statistics for a virtual folder. Includes current used capacity, file count, and capacity/file-count quota limits.
+"""
+type VFolderUsageInfo
+  @join__type(graph: STRAWBERRY)
+{
+  numFiles: Int!
+  usedBytes: BinarySizeInfo!
+  maxSize: BinarySizeInfo
+  maxFiles: Int!
+}
 
 """
 Added in 26.4.2. Usage mode of a virtual folder (GENERAL, MODEL, DATA).
